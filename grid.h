@@ -41,6 +41,45 @@ void grid_delete(grid_t *grid) {
 	qw_destroyimage(grid->spritesheet);
 }
 
+/* save current world to file */
+void grid_saveto(grid_t *grid, const char *filename) {
+	FILE *fp = fopen(filename, "w+");
+	if (!fp) {
+		printf("could not write to \"%s\"!\n", filename);
+		return;
+	}
+	
+	fwrite(&grid->width, sizeof(int), 1, fp);
+	fwrite(&grid->height, sizeof(int), 1, fp);
+	fwrite(grid->blocks, sizeof(block_t), grid->width * grid->height, fp);
+
+	fclose(fp);
+}
+
+/* load world from file, if not exists create a new one */
+grid_t grid_loadfrom(const char *filename) {
+	FILE *fp = fopen(filename, "r+");
+	if (!fp) {
+		printf("coult not load from \"%s\"!\n", filename);
+
+		grid_t newgrid = grid_new(120, 50, -1, "assets/spritesheet.png");
+		return newgrid;
+	}
+	
+	int loaded_dimensions[2] = {0};
+	fread(loaded_dimensions, sizeof(int), 2, fp);
+	block_t loaded_blocks[loaded_dimensions[0] * loaded_dimensions[1]];
+	fread(loaded_blocks, sizeof(block_t), loaded_dimensions[0] * loaded_dimensions[1], fp);
+
+	grid_t loadedgrid = grid_new(loaded_dimensions[0], loaded_dimensions[1], 32, "assets/spritesheet.png");
+	for (int i = 0; i < loaded_dimensions[0] * loaded_dimensions[1]; ++i) {
+		loadedgrid.blocks[i] = loaded_blocks[i];
+	}
+
+	fclose(fp);
+	return loadedgrid;
+}
+
 block_t grid_getblock(grid_t grid, int x, int y) {
 	if (x < 0 || y < 0 || x >= grid.width || y >= grid.height)
 		return block_new(-1);

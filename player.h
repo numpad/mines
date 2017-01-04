@@ -8,15 +8,29 @@
 #include "block.h"
 #include "grid.h"
 
+typedef enum {
+	ARMB, LEGB, LEGF, BODY, HEAD, ARMF
+} bodypart;
+
+typedef enum {
+	WALKDIR_LEFT, WALKDIR_RIGHT
+} walk_direction;
+
+	
+typedef enum {
+	STANDING, WALKING, SITTING
+} walk_state;
+
+typedef enum {
+	JUMPING, FALLING, ONGROUND
+} jump_state;
 
 typedef struct {
-	enum {
-		ARMB, LEGB, LEGF, BODY, HEAD, ARMF
-	} BODYPART;
 	
 	vector_t pos, vel;
 	vector_t lastvel;
-
+	
+	float accx;
 	float maxvy;
 	
 	float jumpvel;
@@ -30,17 +44,10 @@ typedef struct {
 	SDL_RendererFlip *bodypart_flips;
 	qw_image skin;
 	
-	enum {
-		STANDING, WALKING, SITTING
-	} walkingstate;
+	jump_state jumpstate, jumpstate_last;
 	
-	enum {
-		JUMPING, FALLING, ONGROUND
-	} jumpstate, jumpstate_last;
-
-	enum {
-		WALKDIR_LEFT, WALKDIR_RIGHT
-	} walkdir;
+	walk_state walkingstate;
+	walk_direction walkdir;
 
 	int legtimer;
 
@@ -68,6 +75,7 @@ player_t player_new(float x, float y, const char *skinpath) {
 	player.vel = vector_new(0, 0);
 	player.lastvel = vector_new(0, 0);
 	
+	player.accx = 0.75;
 	player.maxvy = 7.75;
 
 	player.jumpvel = 0;
@@ -115,6 +123,16 @@ player_t player_new(float x, float y, const char *skinpath) {
 
 	player.skin = qw_loadimage(skinpath);
 	return player;
+}
+
+void player_jump(player_t *player) {
+	player->jumpvel = player->jumpstrength;
+}
+
+void player_walk(player_t *player, walk_direction dir) {
+	player->vel.x += player->accx * (dir == WALKDIR_LEFT ? -1.0 : 1.0);
+	player->walkingstate = WALKING;
+	player->walkdir = dir ;
 }
 
 void player_draw(player_t *player, grid_t grid) {
@@ -175,58 +193,6 @@ void player_draw(player_t *player, grid_t grid) {
 		qw_drawline(player->pos.x + grid.blocksize / 3 + grid.xoff, player->pos.y - grid.blocksize + grid.yoff, player->pos.x + grid.blocksize / 3 + 6.0 + grid.xoff, player->pos.y - grid.blocksize + grid.yoff);
 		qw_drawline(player->pos.x + grid.blocksize / 3 + grid.xoff, player->pos.y - grid.blocksize * 2.0 + 2.0 + grid.yoff, player->pos.x + grid.blocksize / 3 + 6.0 + grid.xoff, player->pos.y - grid.blocksize * 2.0 + 2.0 + grid.yoff);
 	DEBUG_END
-}
-
-/* casts a ray and checks if it collides with a block */
-int raycast_down(grid_t grid, int px, int py, int len) {
-	for (int y = py; y < py + len; ++y) {
-		int bx, by;
-		grid_world_to_grid(grid, px, y, &bx, &by);
-		if (block_collides(grid_getblock(grid, bx, by))) {
-			return y - py;
-		}
-	}
-
-	return -1;
-}
-
-/* casts a ray and checks if it collides with a block */
-int raycast_up(grid_t grid, int px, int py, int len) {
-	for (int y = py; y > py - len; --y) {
-		int bx, by;
-		grid_world_to_grid(grid, px, y, &bx, &by);
-		if (block_collides(grid_getblock(grid, bx, by))) {
-			return py - y;
-		}
-	}
-
-	return -1;
-}
-
-/* raycast */
-int raycast_right(grid_t grid, int px, int py, int len) {
-	for (int x = px; x < px + len; ++x) {
-		int bx, by;
-		grid_world_to_grid(grid, x, py, &bx, &by);
-		if (block_collides(grid_getblock(grid, bx, by))) {
-			return x - px;
-		}
-	}
-
-	return -1;
-}
-
-/* raycast */
-int raycast_left(grid_t grid, int px, int py, int len) {
-	for (int x = px; x > px - len; --x) {
-		int bx, by;
-		grid_world_to_grid(grid, x, py, &bx, &by);
-		if (block_collides(grid_getblock(grid, bx, by))) {
-			return px - x;
-		}
-	}
-
-	return -1;
 }
 
 void player_update(player_t *player, grid_t *grid) {

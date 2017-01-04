@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL 1
 #define DEBUG(A) do{A;}while(DEBUG_LEVEL)
 #define DEBUG_BEGIN if(DEBUG_LEVEL){
 #define DEBUG_END }
@@ -13,9 +13,11 @@
 #include "vector.h"
 #include "block.h"
 #include "grid.h"
+#include "util.h"
 #include "particle.h"
 #include "worldgen.h"
 #include "player.h"
+#include "enemy.h"
 
 void drawstars(int xoff, int yoff, int seed) {
 	srand(seed);
@@ -43,9 +45,12 @@ void drawstars(int xoff, int yoff, int seed) {
 int main(int argc, char *argv[]) {
 	qw_screen(800, 740, 0, "Mines");
 	
-	grid_t grid = grid_new(120, 50, 32, "assets/spritesheet.png");
-	genworld(grid);
-	
+	grid_t grid = grid_loadfrom("world0.sav");
+	if (grid.blocksize < 0) {
+		grid.blocksize = 32;
+		genworld(grid);
+	}
+
 	player_t player = player_new(250, 500, "assets/skin.png");
 	
 	float daytime = 0,
@@ -55,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 	/* particles */
 	particle_preset_t particle_blood = particle_preset_new(7,
-	                                       /* lifetime: */ 20, 60,
+	                                       /* lifetime: */ 80, 170,
 										   /* size: */      2,  6);
 	particle_preset_addcolor(&particle_blood, rgb_new(194, 48, 48));
 	particle_preset_addcolor(&particle_blood, rgb_new(217, 95, 95));
@@ -64,10 +69,13 @@ int main(int argc, char *argv[]) {
 	particle_preset_addcolor(&particle_blood, rgb_new(167, 65, 65));
 	particle_preset_addcolor(&particle_blood, rgb_new(133, 12, 12));
 	particle_preset_addcolor(&particle_blood, rgb_new(232, 65, 65));
-	
+	particle_blood.type = PARTICLE_FLUID;
+	particle_blood.deathtype = PARTICLEDEATH_FADEOUT;
 	particle_t particles[32];
 	size_t particles_count = 0;
 	
+	enemy_t zombie0 = enemy_new(450, 400, "assets/enemies/zombie2.png");
+
 	time_t starttime = time(0);
 	srand(starttime);
 	while (qw_running()) {
@@ -81,62 +89,33 @@ int main(int argc, char *argv[]) {
 		drawstars(grid.xoff / 10, grid.yoff / 10, days);
 
 		/* input */
-		if (qw_keydown(QW_KEY(W)) && player.jumpvel == 0) {
-			if (player.jumpstate == ONGROUND)
-				player.jumpvel = player.jumpstrength;
+		if (qw_keydown(QW_KEY(W)) && player.jumpvel == 0 && player.jumpstate == ONGROUND) {
+			player_jump(&player);
 		}
 		if (qw_keydown(QW_KEY(A))) {
 			if (player.walkingstate != SITTING) {
-				player.vel.x -= 0.75;
-				player.walkingstate = WALKING;
-				player.walkdir = WALKDIR_LEFT;
+				player_walk(&player, WALKDIR_LEFT);
 			}
+			
+			enemy_walk(&zombie0, WALKDIR_LEFT);
 		}
 		if (qw_keydown(QW_KEY(D))) {
 			if (player.walkingstate != SITTING) {
-				player.vel.x += 0.75;
-				player.walkingstate = WALKING;
-				player.walkdir = WALKDIR_RIGHT;
+				player_walk(&player, WALKDIR_RIGHT);
 			}
+
+			enemy_walk(&zombie0, WALKDIR_RIGHT);
 		}
 
 		if (!qw_keydown(QW_KEY(A)) && ! qw_keydown(QW_KEY(D))) {
 			player.walkingstate = STANDING;
 		}
+
 		if (qw_keydown(QW_KEY(S))) {
 			player.walkingstate = SITTING;
 		}
 		
-		float xa = 0,
-		      ya = 0;
-		static float xv = 0,
-		             yv = 0;
-		float acc = 1.55;
-		float maxvel = 4.25;
-		float drag = 0.85;
-		if (qw_keydown(QW_KEY(LEFT))) xa =  acc;
-		if (qw_keydown(QW_KEY(RIGHT))) xa = -acc;
-		if (qw_keydown(QW_KEY(UP))) ya =  acc;
-		if (qw_keydown(QW_KEY(DOWN))) ya = -acc;
-		xv += xa;
-		yv += ya;
-		
-		if (abs(xv) > maxvel)
-			xv = (xv / abs(xv)) * maxvel;
-		if (abs(yv) > maxvel)
-			yv = (yv / abs(yv)) * maxvel;
-
-		grid.xoff += xv;
-		grid.yoff += yv;
-		
-		xv *= drag;
-		yv *= drag;
-		if (abs(xv) < 0.1)
-			xv = 0;
-		if (abs(yv) < 0.1)
-			yv = 0;
-
-		
+		/* remove/place blocks */
 		if (qw_mousedown(QW_MOUSE_LEFT)) {
 			int x, y;
 			grid_world_to_grid(grid, qw_mousex, qw_mousey, &x, &y);
@@ -188,6 +167,7 @@ int main(int argc, char *argv[]) {
 	
 
 		/* update player */
+		enemy_update(&zombie0, &grid);
 		player_update(&player, &grid);
 		if (player.jumpstate == ONGROUND && player.jumpstate_last == FALLING && player.lastvel.y == player.maxvy) {
 			for (particles_count = 0; particles_count < 32; ++particles_count) {
@@ -195,12 +175,14 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		enemy_updatelast(&zombie0, &grid);
 		player_updatelast(&player, &grid);
 		grid.xoff = -player.pos.x + qw_width / 2.0;
 		grid.yoff = -player.pos.y + 1.75 * (qw_height / 3.0);
 
 		/* render all blocks on screen, player, ... */
 		grid_draw(grid, (-grid.xoff) / grid.blocksize, 0, (qw_width / grid.blocksize) + grid.blocksize, grid.height);
+		enemy_draw(&zombie0, grid);
 		player_draw(&player, grid);
 		
 		/* render particles */
@@ -258,6 +240,8 @@ int main(int argc, char *argv[]) {
 			qw_delay(75);
 	}
 	
+	grid_saveto(&grid, "world0.sav");
+
 	particle_preset_delete(&particle_blood);
 
 	player_delete(&player);
