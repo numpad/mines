@@ -21,7 +21,7 @@ Limb::Limb(sf::Texture& texture, sf::IntRect rect, Vec2 anchor, Vec2 offset, Vec
 	Limb::sprite = sf::Sprite(texture, rect);
 
 	Limb::size = Vec2(rect.width, rect.height);
-	Limb::pos = pos;
+	Limb::pos = offset;
 	Limb::offset = offset;
 
 	Limb::angle = 0;

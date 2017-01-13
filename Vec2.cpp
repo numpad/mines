@@ -97,3 +97,11 @@ void Vec2::rotate(float theta) {
 float Vec2::angle(Vec2 b) {
 	return atan2(b.y - y, b.x - x) * 180.0 / M_PI;
 }
+
+Vec2 Vec2::onlyX() {
+	return Vec2(Vec2::x, 0.0);
+}
+
+Vec2 Vec2::onlyY() {
+	return Vec2(0.0, Vec2::y);
+}

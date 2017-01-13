@@ -12,9 +12,11 @@
 #include <vector>
 
 class Entity {
+protected:
+	Vec2 feet;
 
 public:
-	Vec2 vel, lastvel;
+	Vec2 pos, vel, lastvel;
 	Vec2 acc, maxvel;
 
 	float jumpvel, jumpstrength;

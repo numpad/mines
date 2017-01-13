@@ -40,6 +40,9 @@ public:
 	void rotate(float theta);
 	float angle(Vec2 b);
 
+	Vec2 onlyX();
+	Vec2 onlyY();
+
 };
 
 #endif

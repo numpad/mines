@@ -1,6 +1,9 @@
 #include "Player.hpp"
 
 Player::Player() : Entity("assets/player/skin.png") {
+	/* Offset body --> feet */
+	Player::feet = Vec2(8.0, 33.0);
+
 	/* define render order */
 	Player::limb_z_index = std::vector<size_t>();
 	Player::limb_z_index.push_back( 1);
@@ -40,9 +43,9 @@ void Player::update(Grid& grid) {
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
-	Player::body.renderAll(window, Player::limb_z_index, off);
+	Player::body.renderAll(window, Player::limb_z_index, Player::pos + off);
 }
 
 void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
-	Player::body.renderAll(window, Player::limb_z_index, shader, off);
+	Player::body.renderAll(window, Player::limb_z_index, shader, Player::pos + off);
 }

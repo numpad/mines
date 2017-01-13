@@ -66,7 +66,6 @@ int main(int argc, char *argv[]) {
 	wateryShader.setUniform("time", 0.0f);
 
 	Player *player = new Player;
-	player->body.setPos(Vec2(100, 100));
 	player->head->getAngle() = 45.0f;
 
 	sf::Clock clock;
@@ -95,7 +94,9 @@ int main(int argc, char *argv[]) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			grid.moveCamera( 0.0,  5.0);
 		
-		player->body.setPos(mouse - grid.offset);
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			player->pos = mouse - grid.offset;
+
 		player->update(grid);
 
 		/* Rendering: */
