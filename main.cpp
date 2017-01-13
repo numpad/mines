@@ -1,14 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#define DEBUG_LEVEL 1
-#define DEBUG(A) do{A;}while(DEBUG_LEVEL)
-#define DEBUG_BEGIN if(DEBUG_LEVEL){
-#define DEBUG_END }
-
 #include <vector>
-
 #include <SFML/Graphics.hpp>
 
 #include "rgb.hpp"
@@ -36,7 +29,6 @@ void handle_events(sf::RenderWindow& window) {
 }
 
 int main(int argc, char *argv[]) {
-	
 	sf::RenderWindow window(sf::VideoMode(800, 740), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
