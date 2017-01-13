@@ -1,3 +1,7 @@
 
+CWARN=-Wall -pedantic -ggdb
+CSTD=-std=c++14
+CLIB=-lm -lsfml-graphics -lsfml-window -lsfml-system
+
 all:
-	gcc -std=c99 -Wall -pedantic -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_gfx main.c -omain
+	g++ ${CSTD} ${CWARN} ${CLIB} *.cpp -omain
