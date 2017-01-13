@@ -11,7 +11,7 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::limb_z_index.push_back( 2);
 
 	/* Create Limbs and attach to body */
-	Player::addLimb(Limb(Player::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  -2)));
+	Player::addLimb(Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  -2)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0,  -6)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
@@ -36,7 +36,7 @@ void Player::update(Grid& grid) {
 	Player::armf->getAngle() =  cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
 	Player::armb->getAngle() = -cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
 	
-
+	Entity::physicsUpdate(grid);
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {

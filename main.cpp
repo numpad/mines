@@ -9,7 +9,6 @@
 #include "Vec2.hpp"
 #include "Block.hpp"
 #include "Grid.hpp"
-#include "Util.hpp"
 #include "ParticleConfig.hpp"
 #include "Particle.hpp"
 #include "DayCycle.hpp"
@@ -49,7 +48,7 @@ int main(int argc, char *argv[]) {
 	/* World generation */
 	Grid grid(grid_framebuffer, 120, 50, "assets/tileset.png");
 	grid.generate();
-
+	
 	/* Outline Shader */
 	sf::Shader outlineShader;
 	if (!outlineShader.loadFromFile("assets/shaders/outline.frag", sf::Shader::Fragment)) {
@@ -95,7 +94,8 @@ int main(int argc, char *argv[]) {
 			grid.moveCamera( 0.0, -5.0);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			grid.moveCamera( 0.0,  5.0);
-
+		
+		player->body.setPos(mouse - grid.offset);
 		player->update(grid);
 
 		/* Rendering: */

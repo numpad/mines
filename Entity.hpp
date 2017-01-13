@@ -7,13 +7,14 @@
 #include "Block.hpp"
 #include "Grid.hpp"
 #include "Limb.hpp"
+#include "Util.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 class Entity {
 
 public:
-	Vec2 pos, vel, lastvel;
+	Vec2 vel, lastvel;
 	Vec2 acc, maxvel;
 
 	float jumpvel, jumpstrength;

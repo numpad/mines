@@ -7,7 +7,6 @@
 #include <vector>
 
 class Limb {
-	Vec2 pos;
 	Vec2 anchor, size;
 	float angle;
 	int flipx, flipy;
@@ -17,6 +16,7 @@ class Limb {
 
 	std::vector<Limb> children;
 public:
+	Vec2 pos;
 	Vec2 offset;
 	Limb();
 	Limb(sf::Texture& texture, sf::IntRect rect, Vec2 anchor, Vec2 offset, Vec2 pos = Vec2(0, 0));

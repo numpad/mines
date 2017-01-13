@@ -116,6 +116,23 @@ int Grid::neighbors(int xp, int yp) {
 	return sum;
 }
 
+
+float Grid::raycast(Vec2 start, Vec2 dir, float len) {
+	const float step = dir.length();
+	float dist = 0.0;
+
+	while (dist < len || len < 0.0) {
+		if (Grid::atPoint(start.x, start.y).collides()) {
+			return dist;
+		}
+
+		start += dir;
+		dist += step;
+	}
+
+	return -1.0;
+}
+
 void Grid::point_to_grid(int px, int py, int& x, int& y) {
 	x = (px - Grid::offset.x) / 32;
 	y = (py - Grid::offset.y) / 32;
