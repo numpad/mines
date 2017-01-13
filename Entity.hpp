@@ -22,28 +22,11 @@ public:
 
 	sf::Texture skin;
 
-	Entity(const char *skinpath) {
-		Entity::pos = Vec2(0, 0);
-		Entity::vel = Vec2(0, 0);
-		Entity::lastvel = Vec2(0, 0);
-		Entity::acc = Vec2(0, 0);
-		Entity::maxvel = Vec2(0, 0);
+	Entity(const char *skinpath);
+	void addLimb(Limb body);
+	void addChildLimb(Limb body);
 
-		Entity::jumpvel = 0;
-		Entity::jumpstrength = 0;
-
-		if (!Entity::skin.loadFromFile(skinpath)) {
-			puts("could not load entity skin");
-		}
-	}
-
-	virtual void addLimb(Limb body) {
-		Entity::body = body;
-	}
-
-	virtual void addChildLimb(Limb body) {
-		Entity::body.addChild(body);
-	}
+	void physicsUpdate(Grid& grid);
 	
 	virtual void update(Grid& grid) =0;
 	virtual void render(sf::RenderWindow& window, Vec2 offset = Vec2(0.0f, 0.0f)) =0;
