@@ -394,26 +394,6 @@ void qw_resetimage(qw_image *img) {
 	img->angle = 0.f;
 }
 
-/* Flips image, x and y can both be either 0 or 1 */
-void qw_flipimage(qw_image *img, int x, int y) {
-	if (x)
-		img->flip ^= SDL_FLIP_HORIZONTAL;	
-	if (y)
-		img->flip ^= SDL_FLIP_VERTICAL;
-}
-
-/* Sets image flip, x and y can be either 0 (no flip) or 1 (horizontal/vertical flip) */
-void qw_image_setflip(qw_image *img, int x, int y) {
-	if (x && y)
-		img->flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
-	else if (x && !y)
-		img->flip = SDL_FLIP_HORIZONTAL;
-	else if (!x && y)
-		img->flip = SDL_FLIP_VERTICAL;
-	else if (!x && !y)
-		img->flip = SDL_FLIP_NONE;
-}
-
 /* Sets center point of qw_image used for rotation */
 void qw_image_setcenter(qw_image *img, int x, int y) {
 	img->center.x = x;
