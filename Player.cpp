@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player() : Entity("assets/skin.png") {
+Player::Player() : Entity("assets/player/skin.png") {
 	
 	Player::limb_z_index = std::vector<size_t>();
 	Player::limb_z_index.push_back( 1);
@@ -32,7 +32,7 @@ void Player::update(Grid& grid) {
 	Player::armf->getAngle() =  cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
 	Player::armb->getAngle() = -cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
 	
-	
+
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {

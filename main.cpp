@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	window.setVerticalSyncEnabled(true);
 
 	sf::Texture noise;
-	if (!noise.loadFromFile("assets/noise.png")) {
+	if (!noise.loadFromFile("assets/shaders/noise.png")) {
 		puts("perlin noise not found");
 	}
 		
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 	/* Outline Shader */
 	sf::Shader outlineShader;
-	if (!outlineShader.loadFromFile("assets/outline.frag", sf::Shader::Fragment)) {
+	if (!outlineShader.loadFromFile("assets/shaders/outline.frag", sf::Shader::Fragment)) {
 		puts("failed to load shader!");
 	}
 	outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
 	/* Fragment Shader */
 	sf::Shader wateryShader;
-	if (!wateryShader.loadFromFile("assets/watery.frag", sf::Shader::Fragment)) {
+	if (!wateryShader.loadFromFile("assets/shaders/watery.frag", sf::Shader::Fragment)) {
 		puts("failed to load shader #2!");
 	}
 	wateryShader.setUniform("texture", sf::Shader::CurrentTexture);
