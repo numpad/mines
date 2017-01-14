@@ -1,6 +1,20 @@
 #include "Grid.hpp"
 
-Grid::Grid(sf::RenderTexture& window, const char *filename) {
+Grid::Grid(sf::RenderTexture& window, const char *filename, const char *tileset) {
+	Grid::offset = Vec2(0.0f, 0.0f);
+	Grid::blocksize = 32;
+	Grid::blocks = std::vector<Block>();
+	Grid::window = &window;
+
+	if (!Grid::tileset.loadFromFile(tileset)) {
+		puts("failed to load tileset!");
+		Grid::tileset.create(320, 320);
+	}
+
+	Grid::tileset.setSmooth(false);
+	Block::setGlobalTileset(Grid::tileset);
+	
+
 	FILE *fp = fopen(filename, "r+");
 	if (!fp) {
 		printf("could not load from \"%s\"!\n", filename);
@@ -9,20 +23,21 @@ Grid::Grid(sf::RenderTexture& window, const char *filename) {
 	
 	int loaded_dimensions[2] = {0};
 	fread(loaded_dimensions, sizeof(int), 2, fp);
-	//block_t loaded_blocks[loaded_dimensions[0] * loaded_dimensions[1]];
-	//fread(loaded_blocks, sizeof(block_t), loaded_dimensions[0] * loaded_dimensions[1], fp);
+	Grid::width = loaded_dimensions[0];
+	Grid::height = loaded_dimensions[1];
+	
+	const int loadedblocks_count = loaded_dimensions[0] * loaded_dimensions[1];
 
-	//grid_t loadedgrid = grid_new(loaded_dimensions[0], loaded_dimensions[1], 32, "assets/spritesheet.png");
-	for (int i = 0; i < loaded_dimensions[0] * loaded_dimensions[1]; ++i) {
-		//loadedgrid.blocks[i] = loaded_blocks[i];
-	}
+	int *loadedblocks = (int*)malloc(loadedblocks_count * sizeof(int));
+	fread(loadedblocks, sizeof(int), loadedblocks_count, fp);
 
 	fclose(fp);
 
-	Grid(window, loaded_dimensions[0], loaded_dimensions[1], "assets/tileset.png");
-	for (int i = 0; i < loaded_dimensions[0] * loaded_dimensions[1]; ++i) {
-		Grid::at(i).id = BLOCK_GRASS;
+	for (int i = 0; i < loadedblocks_count; ++i) {
+		Grid::blocks.push_back(Block(loadedblocks[i]));
 	}
+
+	free(loadedblocks);
 }
 
 Grid::Grid(sf::RenderTexture& window, int w, int h, const char *tileset) {
@@ -59,9 +74,12 @@ void Grid::save(const char *filename) {
 		return;
 	}
 	
-	fwrite(&width, sizeof(int), 1, fp);
-	fwrite(&height, sizeof(int), 1, fp);
-	//fwrite(blocks, sizeof(block_t), grid->width * grid->height, fp);
+	fwrite(&(Grid::width), sizeof(int), 1, fp);
+	fwrite(&(Grid::height), sizeof(int), 1, fp);
+
+	for (size_t i = 0; i < Grid::blocks.size(); ++i) {
+		fwrite(&(Grid::at(i).id), sizeof(int), 1, fp);
+	}
 
 	fclose(fp);
 }

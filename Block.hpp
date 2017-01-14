@@ -110,6 +110,7 @@ public:
 	
 	bool collides();
 	void render(sf::RenderTexture& window, int x, int y, float xoff, float yoff);
+	int maxDamage();
 
 	static void setGlobalTileset(sf::Texture& texture);
 

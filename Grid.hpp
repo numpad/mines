@@ -19,7 +19,7 @@ public:
 	
 	std::vector<Block> blocks;
 
-	Grid(sf::RenderTexture&, const char *filename);
+	Grid(sf::RenderTexture&, const char *filename, const char *tileset);
 	Grid(sf::RenderTexture&, int width, int height, const char *tileset);
 	~Grid();
 

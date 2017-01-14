@@ -122,7 +122,7 @@ void Entity::physicsHandleWalking(Grid& grid) {
 }
 
 void Entity::physicsUpdate(Grid& grid) {
-	puts("\x1b[2J\x1b[1;1H");
+	
 	if (Entity::jumpvel > 0.0) {
 		Entity::physicsHandleJumping(grid);
 	} else {
@@ -130,31 +130,4 @@ void Entity::physicsUpdate(Grid& grid) {
 	}
 
 	Entity::physicsHandleWalking(grid);
-
-	switch (Entity::walkstate) {
-		case Entity::WalkState::STANDING:
-			printf("Standing");
-			break;
-		case Entity::WalkState::WALKING:
-			printf("Walking ");
-			if (Entity::walkdir == Entity::WalkState::LEFT)
-				printf("left");
-			else
-				printf("right");
-			break;
-	};
-	switch (Entity::jumpstate) {
-		case Entity::JumpState::FALLING:
-			puts("\t | Falling");
-			break;
-		case Entity::JumpState::JUMPING:
-			puts("\t | Jumping");
-			break;
-		case Entity::JumpState::STANDING:
-			puts("\t | Standing");
-			break;
-		
-	};
-
-	printf("vel.x = %g\n", Entity::vel.x);
 }

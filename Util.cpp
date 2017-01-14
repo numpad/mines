@@ -17,3 +17,12 @@ void Util::limit(int& val, int max) {
 	if (val > max)
 		val = max;
 }
+
+bool Util::file_exists(const char *fn) {
+	FILE *fp = fopen(fn, "r");
+	if (!fp)
+		return false;
+	
+	fclose(fp);
+	return true;
+}

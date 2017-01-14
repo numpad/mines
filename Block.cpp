@@ -34,6 +34,10 @@ bool Block::collides() {
 	return block_does_collide[id];
 }
 
+int Block::maxDamage() {
+	return block_max_damages[Block::id];
+}
+
 void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yoff) {
 	if (Block::id < 0)
 		return;
@@ -45,9 +49,22 @@ void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yo
 
 	float damage_percent = (float)Block::damage / (float)Block::damage_max;
 	if (damage_percent > 0) {
-		//int damage_id = 9 * 10 + damage_percent * 10;
-		//qw_drawimage_quad(spr, (int)(xoff + (float)x * (float)block_size), (int)(yoff + (float)y * (float)block_size), block_size, block_size, (int)(damage_id % 10) * 32, (int)(damage_id / 10) * 32, 32, 32);
+		int damage_id = 9 * 10 + damage_percent * 10;
+		sf::IntRect subrect = Block::sprite.getTextureRect();
+		int srx = subrect.left,
+			sry = subrect.top;
+
+		subrect.left = (damage_id % 10) * 32;
+		subrect.top = (damage_id / 10) * 32;
+		Block::sprite.setTextureRect(subrect);
+
+		window.draw(Block::sprite);
+		
+		subrect.left = srx;
+		subrect.top = sry;
+		Block::sprite.setTextureRect(subrect);
 	}
+	
 	Block::sprite.setColor(sf::Color::White);
 }
 
