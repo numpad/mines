@@ -7,6 +7,7 @@ namespace Util {
 	unsigned int min(unsigned int a, unsigned int b);
 
 	void limit(float& val, float max);
+	void limit(int& n, int max);
 }
 
 #endif

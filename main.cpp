@@ -15,6 +15,7 @@
 #include "Limb.hpp"
 #include "Entity.hpp"
 #include "Player.hpp"
+#include "Util.hpp"
 
 void handle_events(sf::RenderWindow& window) {
 	sf::Event event;
@@ -67,6 +68,7 @@ int main(int argc, char *argv[]) {
 
 	Player *player = new Player;
 	player->head->getAngle() = 45.0f;
+	player->setPos(Vec2(400.0, 400.0));
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -94,8 +96,24 @@ int main(int argc, char *argv[]) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			grid.moveCamera( 0.0,  5.0);
 		
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			player->pos = mouse - grid.offset;
+			player->vel.y = 0.0;
+		}
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+			player->jump();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			player->walk(Entity::WalkState::LEFT);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			player->walk(Entity::WalkState::RIGHT);
+		}
+		
+		if ((!sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::D))) {
+			player->walkstate = Entity::WalkState::STANDING;
+		}
 
 		player->update(grid);
 

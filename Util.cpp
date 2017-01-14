@@ -12,3 +12,8 @@ void Util::limit(float& val, float max) {
 	if (val > max)
 		val = max;
 }
+
+void Util::limit(int& val, int max) {
+	if (val > max)
+		val = max;
+}

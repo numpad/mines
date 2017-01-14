@@ -132,7 +132,7 @@ void player_jump(player_t *player) {
 void player_walk(player_t *player, walk_direction dir) {
 	player->vel.x += player->accx * (dir == WALKDIR_LEFT ? -1.0 : 1.0);
 	player->walkingstate = WALKING;
-	player->walkdir = dir ;
+	player->walkdir = dir;
 }
 
 void player_draw(player_t *player, grid_t grid) {

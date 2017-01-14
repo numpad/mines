@@ -2,7 +2,13 @@
 
 Player::Player() : Entity("assets/player/skin.png") {
 	/* Offset body --> feet */
-	Player::feet = Vec2(8.0, 33.0);
+	Player::feetOffset = Vec2(8.0, 34.0);
+	Player::headOffset = Vec2(8.0, -20.0);
+
+	/* Jumping, Walking Speed */
+	Player::jumpstrength = 9.5; // TODO: Make a little random
+	Player::acc = Vec2(0.75, 0.0);
+	Player::maxvel = Vec2(3.5, 7.75);
 
 	/* define render order */
 	Player::limb_z_index = std::vector<size_t>();
@@ -20,26 +26,38 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  6)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(46,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  6)));
-	
+
 	/* Keep pointers to provide easy access  */
 	Player::head = &Player::body.getChild(0);
 	Player::armb = &Player::body.getChild(1);
 	Player::armf = &Player::body.getChild(2);
 	Player::legf = &Player::body.getChild(3);
 	Player::legb = &Player::body.getChild(4);
+	
+}
 
-	Player::acc.x = 0.75;
-	Player::maxvel = Vec2(5.0, 7.75);
+void Player::animate(Grid& grid) {
+	if (Player::walkstate == Entity::WalkState::WALKING) {
+		Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.0 : 1.0;
+
+		Player::legf->getAngle() =  sin(Player::legAnimation / 6.0) * 30.0;
+		Player::legb->getAngle() = -sin(Player::legAnimation / 6.0) * 30.0;
+		Player::armf->getAngle() =  cos(Player::legAnimation / 8.0) * 20.0;
+		Player::armb->getAngle() = -cos(Player::legAnimation / 8.0) * 20.0;
+	} else if (Player::walkstate == Entity::WalkState::STANDING) {
+		if (fabs(Player::legb->getAngle()) > 6.0) {
+			Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.5 : 1.5;
+
+			Player::legf->getAngle() =  sin(Player::legAnimation / 6.0) * 30.0;
+			Player::legb->getAngle() = -sin(Player::legAnimation / 6.0) * 30.0;
+		}
+	}
 }
 
 void Player::update(Grid& grid) {
 	Player::body.update();
-	Player::legf->getAngle() =  sin(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 30.0;
-	Player::legb->getAngle() = -sin(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 30.0;
-	Player::armf->getAngle() =  cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
-	Player::armb->getAngle() = -cos(Player::timeAlive.getElapsedTime().asMilliseconds() / 120.0) * 20.0;
-	
-	Entity::physicsUpdate(grid);
+	Player::physicsUpdate(grid);
+	Player::animate(grid);
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
