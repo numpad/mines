@@ -39,6 +39,7 @@ public:
 
 	void point_to_grid(int px, int py, int& x, int& y);
 	Block& atPoint(int px, int py);
+	Block& atPoint(Vec2 p);
 
 	void render();
 	void render(int xs, int ys, int width, int height);

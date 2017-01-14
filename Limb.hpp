@@ -9,13 +9,13 @@
 class Limb {
 	Vec2 anchor, size;
 	float angle;
-	int flipx, flipy;
 	bool dead;
 
 	sf::Sprite sprite;
 
 	std::vector<Limb> children;
 public:
+	int flipx, flipy;
 	Vec2 pos;
 	Vec2 offset;
 	Limb();

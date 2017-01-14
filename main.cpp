@@ -29,7 +29,8 @@ void handle_events(sf::RenderWindow& window) {
 }
 
 int main(int argc, char *argv[]) {
-	sf::RenderWindow window(sf::VideoMode(800, 740), "Mines!", sf::Style::Titlebar | sf::Style::Close);
+	Vec2 screenSize = Vec2(800.0, 740.0);
+	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
 	sf::Texture noise;
@@ -67,7 +68,6 @@ int main(int argc, char *argv[]) {
 	wateryShader.setUniform("time", 0.0f);
 
 	Player *player = new Player;
-	player->head->getAngle() = 45.0f;
 	player->setPos(Vec2(400.0, 400.0));
 
 	sf::Clock clock;
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			Block b(BLOCK_TNT);
+			Block b(BLOCK_ICE);
 			Block& current = grid.atPoint(mouse.x, mouse.y);
 			
 			if (!current.collides()) {
@@ -115,7 +115,9 @@ int main(int argc, char *argv[]) {
 			player->walkstate = Entity::WalkState::STANDING;
 		}
 
+		//player->head->getAngle() = mouse.angle(player->head->pos + player->pos + player->head->offset);
 		player->update(grid);
+		grid.offset = screenSize / 2.0 - player->pos + Vec2(0.0, 50.0);
 
 		/* Rendering: */
 		daycycle.render(window, grid);
@@ -127,7 +129,7 @@ int main(int argc, char *argv[]) {
 		window.draw(grid_fb_sprite);
 		
 		//outlineShader.setUniform("step", 1.0f / 75.0f);
-		player->render(window, grid.offset);
+		player->render(window, outlineShader, grid.offset);
 
 		window.display();
 	}

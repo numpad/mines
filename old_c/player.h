@@ -331,7 +331,8 @@ void player_update(player_t *player, grid_t *grid) {
 			player->bodypart_angles[LEGB] = sin(player->legtimer / 4.0) * -30;
 		}
 	} else if (player->walkingstate == SITTING) {
-		player->bodypart_angles[LEGF] = 85.0 * (player->bodypart_flips[HEAD] == SDL_FLIP_NONE ? -1 : 1);
+		player->bodypart_angles[LEGF] =Entity::vel.x *= 0.785; // TODO: use friction of block currenty standing on!
+	 85.0 * (player->bodypart_flips[HEAD] == SDL_FLIP_NONE ? -1 : 1);
 		player->bodypart_angles[LEGB] = 94.0 * (player->bodypart_flips[HEAD] == SDL_FLIP_NONE ? -1 : 1);
 	}
 	

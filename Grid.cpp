@@ -144,6 +144,10 @@ Block& Grid::atPoint(int px, int py) {
 	return Grid::at(bx, by);
 }
 
+Block& Grid::atPoint(Vec2 p) {
+	return Grid::atPoint(p.x, p.y);
+}
+
 void Grid::render() {
 	Grid::render(-Grid::offset.x / 32, -Grid::offset.y / 32,
 	            ((int)(*Grid::window).getSize().x / 32) + 32,

@@ -39,14 +39,13 @@ void Entity::jump(float factor) {
 }
 
 void Entity::walk(Entity::WalkState::Direction dir) {
-	Entity::vel.x += Entity::acc.x * (dir == Entity::WalkState::LEFT ? -1.0 : 1.0);
 	Entity::walkstate = Entity::WalkState::WALKING;
 	Entity::walkdir = dir;
 }
 
 void Entity::physicsHandleJumping(Grid& grid) {
 	unsigned int dist_to_ceil_left  = (unsigned int)grid.raycast(Entity::pos + (Entity::headOffset * Vec2(-1.0, 1.0)) + grid.offset, Vec2(0.0, -1.0), 12.0);
-	unsigned int dist_to_ceil_right = (unsigned int)grid.raycast(Entity::pos + (Entity::headOffset * Vec2(-1.0, 1.0)) + grid.offset, Vec2(0.0, -1.0), 12.0);
+	unsigned int dist_to_ceil_right = (unsigned int)grid.raycast(Entity::pos + (Entity::headOffset * Vec2( 1.0, 1.0)) + grid.offset, Vec2(0.0, -1.0), 12.0);
 	unsigned int dist_to_ceil = Util::min(dist_to_ceil_left, dist_to_ceil_right);
 
 	if (dist_to_ceil < Entity::jumpvel) {
@@ -93,23 +92,37 @@ void Entity::physicsHandleFalling(Grid& grid) {
 }
 
 void Entity::physicsHandleWalking(Grid& grid) {
-	
+	/* If standing and movement is close to 0, set to 0 */
 	if (Entity::walkstate != Entity::WalkState::WALKING && abs(Entity::vel.x) < 0.001) {
 		Entity::vel.x = 0.0;
 	}
 
+	/* When walking, update position */
+	if (Entity::walkstate == Entity::WalkState::WALKING) {
+		Entity::vel.x += Entity::acc.x * (Entity::walkdir == Entity::WalkState::LEFT ? -1.0 : 1.0);
+	}
+	
+	/* Don't move faster than maximum speed */
 	if (fabs(Entity::vel.x) > Entity::maxvel.x) {
 		const float sign = fabs(Entity::vel.x) / Entity::vel.x;
 		Entity::vel.x = Entity::maxvel.x * sign;
 	}
 
-	printf("vel.x = %g\n", Entity::vel.x);
+	/* If no longer walking, apply friction */
+	if (Entity::walkstate != Entity::WalkState::WALKING) {
+		Block& standing_on = grid.atPoint(Entity::pos + Entity::feetOffset + grid.offset);
+		float current_friction = 0.785;
+		if (standing_on.id > 0) {
+			current_friction = standing_on.friction;
+		}
+		Entity::vel.x *= current_friction;
+	}
+
 	Entity::pos.x += Entity::vel.x;
-	Entity::vel.x *= 0.785; // TODO: use friction of block currenty standing on!
-	
 }
 
 void Entity::physicsUpdate(Grid& grid) {
+	puts("\x1b[2J\x1b[1;1H");
 	if (Entity::jumpvel > 0.0) {
 		Entity::physicsHandleJumping(grid);
 	} else {
@@ -118,7 +131,6 @@ void Entity::physicsUpdate(Grid& grid) {
 
 	Entity::physicsHandleWalking(grid);
 
-	puts("---------------");
 	switch (Entity::walkstate) {
 		case Entity::WalkState::STANDING:
 			printf("Standing");
@@ -143,4 +155,6 @@ void Entity::physicsUpdate(Grid& grid) {
 			break;
 		
 	};
+
+	printf("vel.x = %g\n", Entity::vel.x);
 }

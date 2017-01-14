@@ -7,13 +7,18 @@ void Block::setGlobalTileset(sf::Texture& texture) {
 }
 
 Block::Block(int block_id) : tint(255, 255, 255) {
+	/* Set ID */
 	Block::id = (blockid)block_id;
-	Block::damage = 0;
 
+	/* Load damage */
+	Block::damage = 0;
 	Block::damage_max = block_max_damages[id];
 	if (Block::damage_max == 0)
 		Block::damage_max = 50;
 	
+	/* Friction */
+	Block::friction = block_friction[id];
+
 	Block::sprite.setTexture(*Block::tileset);
 	Block::sprite.setTextureRect(sf::IntRect((Block::id % 10) * 32, (Block::id / 10) * 32, 32, 32));
 }
