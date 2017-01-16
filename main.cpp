@@ -58,7 +58,8 @@ int main(int argc, char *argv[]) {
 		puts("failed to load shader!");
 	}
 	outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
-	outlineShader.setUniform("step", 1.0f / 75.0f);
+	outlineShader.setUniform("noiseTexture", noise);
+	outlineShader.setUniform("time", 0.0f);
 
 	/* Fragment Shader */
 	sf::Shader wateryShader;
@@ -72,12 +73,13 @@ int main(int argc, char *argv[]) {
 	player.setPos(Vec2(400.0, 400.0));
 
 	sf::Clock clock;
+	int current_block_id = 0;
 	while (window.isOpen()) {
 		handle_events(window);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			Block b(BLOCK_ICE);
+			Block b(current_block_id);
 			Block& current = grid.atPoint(mouse.x, mouse.y);
 			
 			if (!current.collides()) {
@@ -95,7 +97,8 @@ int main(int argc, char *argv[]) {
 		
 		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 		wateryShader.setUniform("time", elapsed);
-	
+		outlineShader.setUniform("time", elapsed);
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			player.jump();
 		}
@@ -110,6 +113,15 @@ int main(int argc, char *argv[]) {
 			player.walkstate = Entity::WalkState::STANDING;
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+			current_block_id += 1;
+			printf("Block: %d\n", current_block_id);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+			current_block_id -= 1;
+			printf("Block: %d\n", current_block_id);
+		}
+
 		//player.head->getAngle() = mouse.angle(player.head->pos + player.pos + player.head->offset);
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
@@ -121,7 +133,7 @@ int main(int argc, char *argv[]) {
 		grid.render();
 		grid.window->display();
 		sf::Sprite grid_fb_sprite(grid.window->getTexture());
-		window.draw(grid_fb_sprite);
+		window.draw(grid_fb_sprite, &outlineShader);
 		
 		//outlineShader.setUniform("step", 1.0f / 75.0f);
 		player.render(window, grid.offset);

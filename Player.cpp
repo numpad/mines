@@ -2,8 +2,9 @@
 
 Player::Player() : Entity("assets/player/skin.png") {
 	/* Offset body --> feet */
-	Player::feetOffset = Vec2(8.0, 34.0);
-	Player::headOffset = Vec2(8.0, -20.0);
+	Player::feetOffset = Vec2(8.0, 36.0);
+	Player::headOffset = Vec2(8.0, -26.0);
+	Player::legAnimation = 0.0;
 
 	/* Jumping, Walking Speed */
 	Player::jumpstrength = 9.5; // TODO: Make a little random
@@ -24,8 +25,8 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0,  -6)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  6)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(46,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  6)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(46,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
 
 	/* Keep pointers to provide easy access  */
 	Player::head = &Player::body.getChild(0);
@@ -41,16 +42,19 @@ void Player::animate(Grid& grid) {
 		Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.0 : 1.0;
 
 		Player::legf->getAngle() =  sin(Player::legAnimation / 6.0) * 30.0;
-		Player::legb->getAngle() = -sin(Player::legAnimation / 6.0) * 30.0;
-		Player::armf->getAngle() =  cos(Player::legAnimation / 8.0) * 20.0;
-		Player::armb->getAngle() = -cos(Player::legAnimation / 8.0) * 20.0;
+		Player::legb->getAngle() = -Player::legf->getAngle();
+		Player::armf->getAngle() =  cos(Player::legAnimation / 7.0) * 20.0;
+		Player::armb->getAngle() = -Player::armf->getAngle();
 	} else if (Player::walkstate == Entity::WalkState::STANDING) {
-		if (fabs(Player::legb->getAngle()) > 6.0) {
+		if (fabs(Player::vel.x) > 0.0) {
 			Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.5 : 1.5;
-
-			Player::legf->getAngle() =  sin(Player::legAnimation / 6.0) * 30.0;
-			Player::legb->getAngle() = -sin(Player::legAnimation / 6.0) * 30.0;
+		} else {
+			Player::legAnimation = 0.0;
 		}
+
+		Player::legf->getAngle() *= 0.75;
+		Player::legb->getAngle() = -Player::legf->getAngle();
+	
 	}
 }
 

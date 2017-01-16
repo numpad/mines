@@ -110,7 +110,7 @@ void Entity::physicsHandleWalking(Grid& grid) {
 
 	/* If no longer walking, apply friction */
 	if (Entity::walkstate != Entity::WalkState::WALKING) {
-		Block& standing_on = grid.atPoint(Entity::pos + Entity::feetOffset + grid.offset);
+		Block& standing_on = grid.atPoint(Entity::pos + (Entity::feetOffset * Vec2(0.0, 1.0)) + grid.offset);
 		float current_friction = 0.785;
 		if (standing_on.id > 0) {
 			current_friction = standing_on.friction;

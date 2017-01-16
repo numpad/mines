@@ -8,7 +8,7 @@ typedef enum {
 	BLOCK_GRASS, BLOCK_DIRT, BLOCK_STONE, BLOCK_TREE, BLOCK_GRASS_DECO, BLOCK_TNT,
 	BLOCK_OVEN, BLOCK_OVEN_ON, BLOCK_COAL_ORE, BLOCK_IRON_ORE, BLOCK_COBBLESTONE,
 	BLOCK_GRAVEL, BLOCK_WOOD, BLOCK_LEAVES, BLOCK_BRICKS, BLOCK_CHEST, BLOCK_WORKBENCH,
-	BLOCK_BOOKSHELF, BLOCK_GOLD_ORE, BLOCK_DIAMOND_ORE, BLOCK_SAND, BLOCK_GLASS, BLOCK_ICE
+	BLOCK_BOOKSHELF, BLOCK_GOLD_ORE, BLOCK_DIAMOND_ORE, BLOCK_SAND, BLOCK_GLASS, BLOCK_ICE, BLOCK_WATER
 } blockid;
 
 const int block_max_damages[] = {
@@ -35,6 +35,7 @@ const int block_max_damages[] = {
 	[BLOCK_SAND] 		=  40,
 	[BLOCK_GLASS] 		=  15,
 	[BLOCK_ICE]			=  25,
+	[BLOCK_WATER]		=  9999999,
 };
 
 const int block_does_collide[] = {
@@ -61,6 +62,7 @@ const int block_does_collide[] = {
 	[BLOCK_SAND] 		= 1,
 	[BLOCK_GLASS] 		= 1,
 	[BLOCK_ICE]			= 1,
+	[BLOCK_WATER]		= 0,
 };
 
 
@@ -88,6 +90,8 @@ const float block_friction[] = {
 	[BLOCK_SAND] 		= 0.775,
 	[BLOCK_GLASS] 		= 0.775,
 	[BLOCK_ICE] 		= 0.975,
+	[BLOCK_WATER] 		= 0.45,
+	
 };
 
 class Block {

@@ -2,6 +2,7 @@
 
 sf::Texture *Block::tileset = NULL;
 
+
 void Block::setGlobalTileset(sf::Texture& texture) {
 	Block::tileset = &texture;
 }
@@ -48,6 +49,9 @@ void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yo
 	window.draw(Block::sprite);
 
 	float damage_percent = (float)Block::damage / (float)Block::damage_max;
+	if (damage_percent >= 1.0)
+		damage_percent = 0.99;
+	
 	if (damage_percent > 0) {
 		int damage_id = 9 * 10 + damage_percent * 10;
 		sf::IntRect subrect = Block::sprite.getTextureRect();
@@ -64,7 +68,7 @@ void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yo
 		subrect.top = sry;
 		Block::sprite.setTextureRect(subrect);
 	}
-	
+
 	Block::sprite.setColor(sf::Color::White);
 }
 

@@ -1,29 +1,34 @@
 uniform sampler2D texture;
-uniform float step;
+uniform sampler2D noiseTexture;
+uniform float time;
 
-vec2 vec2_ceil(vec2 v) {
-	return vec2(v.x, v.y);
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float perlin(vec2 pos) {
+	return texture2D(noiseTexture, pos).r;
+}
+
+float hardedge(float v) {
+	return v > 0.5 ? 1.0 : 0.0;
+}
+
+vec3 rainbow(vec2 pos, float off) {
+	return vec3(sin(6.93 * pos.x + off), sin(3.6 * pos.y + off), cos(5.27 * pos.x + off));
 }
 
 void main() {
-	vec2 down = vec2(0.0, step);
-	vec2 right = vec2(step, 0.0);
-	vec2 vert1 = vec2(step, step);
-	vec2 vert2 = vec2(step, -step);
-	
-	float alpha = 8.0 * texture2D(texture, gl_TexCoord[0].xy).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy + down)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy - down)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy + right)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy - right)).a;
+	vec4 pixel = texture2D(texture, gl_TexCoord[0].xy);
+	vec4 orig  = pixel;
 
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy + vert1)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy - vert1)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy + vert2)).a;
-	alpha -= texture2D(texture, vec2_ceil(gl_TexCoord[0].xy - vert2)).a;
+	if (pixel.a == 0.0) {
+		float noise = rand(gl_TexCoord[0].xy) * 0.015;
+
+		pixel.rgb = vec3(0.0 + noise, 0.0 + noise, 0.1 + noise);
+		pixel.a = 1.0 - gl_TexCoord[0].y;
+		
+	}
 	
-	if (alpha < 0.01)
-		gl_FragColor = texture2D(texture, gl_TexCoord[0].xy);
-	else
-		gl_FragColor = vec4(0.13, 0.13, 0.13, 1.0);
+	gl_FragColor = pixel;
 }
