@@ -133,7 +133,6 @@ void Entity::physicsHandleWalking(Grid& grid) {
 	if (rays_right_min < distance) {
 		if (Entity::walkdir == Entity::WalkState::RIGHT) {
 			Entity::vel.x = 0;
-			Entity::walkstate = Entity::WalkState::STANDING;
 		}
 	}
 
@@ -151,7 +150,6 @@ void Entity::physicsHandleWalking(Grid& grid) {
 	if (rays_left_min < distance) {
 		if (Entity::walkdir == Entity::WalkState::LEFT) {
 			Entity::vel.x = 0;
-			Entity::walkstate = Entity::WalkState::STANDING;
 		}
 	}
 
