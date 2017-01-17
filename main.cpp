@@ -34,11 +34,6 @@ int main(int argc, char *argv[]) {
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
-	sf::Texture noise;
-	if (!noise.loadFromFile("assets/shaders/noise.png")) {
-		puts("perlin noise not found");
-	}
-		
 	sf::RenderTexture grid_framebuffer;
 	if (!grid_framebuffer.create(window.getSize().x, window.getSize().y)) {
 		puts("failed to create grid framebuffer");
@@ -46,7 +41,7 @@ int main(int argc, char *argv[]) {
 	grid_framebuffer.clear(sf::Color(0, 0, 0, 0));
 
 	/* Day/Night cycle */
-	DayCycle daycycle(500, RGB(61, 159, 203));
+	DayCycle daycycle(5000, RGB(61, 159, 203));
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */
@@ -55,13 +50,12 @@ int main(int argc, char *argv[]) {
 	Grid grid(grid_framebuffer, "world0.sav", "assets/tileset.png");
 
 	/* Outline Shader */
-	sf::Shader outlineShader;
-	if (!outlineShader.loadFromFile("assets/shaders/outline.frag", sf::Shader::Fragment)) {
+	sf::Shader druggedShader;
+	if (!druggedShader.loadFromFile("assets/shaders/drugged.frag", sf::Shader::Fragment)) {
 		puts("failed to load shader!");
 	}
-	outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
-	outlineShader.setUniform("noiseTexture", noise);
-	outlineShader.setUniform("time", 0.0f);
+	druggedShader.setUniform("texture", sf::Shader::CurrentTexture);
+	druggedShader.setUniform("time", 0.0f);
 
 	/* Fragment Shader */
 	sf::Shader wateryShader;
@@ -99,7 +93,7 @@ int main(int argc, char *argv[]) {
 		
 		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 		wateryShader.setUniform("time", elapsed);
-		outlineShader.setUniform("time", elapsed);
+		druggedShader.setUniform("time", elapsed);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			player.jump(1.1);
@@ -117,6 +111,8 @@ int main(int argc, char *argv[]) {
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 			player.vel.y -= 0.3;
+			if (player.vel.y < -10.0)
+				player.vel.y = -10.0;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -139,11 +135,13 @@ int main(int argc, char *argv[]) {
 		grid.render();
 		grid.window->display();
 		sf::Sprite grid_fb_sprite(grid.window->getTexture());
-		window.draw(grid_fb_sprite, &outlineShader);
+		window.draw(grid_fb_sprite, &druggedShader);
 		
-		//outlineShader.setUniform("step", 1.0f / 75.0f);
+		//druggedShader.setUniform("step", 1.0f / 75.0f);
 		player.render(window, grid.offset);
-
+		lightsystem.setLight(0, sf::Glsl::Vec3(mouse.x / screenSize.x, 1.0 - mouse.y / screenSize.y, 2.0));
+		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
+		
 		lightsystem.render(window);
 			
 		window.display();

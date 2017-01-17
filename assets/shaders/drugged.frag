@@ -19,16 +19,9 @@ vec3 rainbow(vec2 pos, float off) {
 }
 
 void main() {
-	vec4 pixel = texture2D(texture, gl_TexCoord[0].xy);
-	vec4 orig  = pixel;
+	float xtimeoff = cos(time * 0.01 + gl_TexCoord[0].y) * 0.01;
+	float ytimeoff = sin(time * (gl_TexCoord[0].x * 0.05)) * 0.01;
+	vec4 pixel = texture2D(texture, vec2(gl_TexCoord[0].x + sin(time * 0.1) * sin(gl_TexCoord[0].y * 30.0) / 60.0 + xtimeoff, gl_TexCoord[0].y + cos(gl_TexCoord[0].y * 30.0) / 60.0 + ytimeoff));
 
-	if (pixel.a == 0.0) {
-		float noise = rand(gl_TexCoord[0].xy) * 0.015;
-
-		pixel.rgb = vec3(0.0 + noise, 0.0 + noise, 0.1 + noise);
-		pixel.a = 1.0 - gl_TexCoord[0].y;
-		
-	}
-	
 	gl_FragColor = pixel;
 }
