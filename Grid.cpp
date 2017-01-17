@@ -135,7 +135,7 @@ int Grid::neighbors(int xp, int yp) {
 }
 
 
-float Grid::raycast(Vec2 start, Vec2 dir, float len) {
+float Grid::raycast(Vec2 start, Vec2 dir, float len, float infinity) {
 	const float step = dir.length();
 	float dist = 0.0;
 
@@ -148,7 +148,7 @@ float Grid::raycast(Vec2 start, Vec2 dir, float len) {
 		dist += step;
 	}
 
-	return -1.0;
+	return infinity;
 }
 
 void Grid::point_to_grid(int px, int py, int& x, int& y) {

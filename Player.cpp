@@ -2,8 +2,8 @@
 
 Player::Player() : Entity("assets/player/skin.png") {
 	/* Offset body --> feet */
-	Player::feetOffset = Vec2(8.0, 36.0);
-	Player::headOffset = Vec2(8.0, -26.0);
+	Player::feetOffset = Vec2(7.0, 37.0);
+	Player::headOffset = Vec2(6.0, -28.0);
 	Player::legAnimation = 0.0;
 
 	/* Jumping, Walking Speed */
@@ -21,10 +21,10 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::limb_z_index.push_back( 2);
 
 	/* Create Limbs and attach to body */
-	Player::addLimb(Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  0)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0,  -6)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  -4)));
+	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  0)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -6)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -4)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -4)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(46,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
 

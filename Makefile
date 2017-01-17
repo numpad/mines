@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -Wall -pedantic
 LDFLAGS=-lm -lsfml-graphics -lsfml-window -lsfml-system
-SOURCES=main.cpp Block.cpp DayCycle.cpp Entity.cpp Grid.cpp Limb.cpp Particle.cpp ParticleConfig.cpp Player.cpp rect.cpp rgb.cpp RNG.cpp Util.cpp Vec2.cpp
+SOURCES=main.cpp Block.cpp DayCycle.cpp Entity.cpp Grid.cpp Limb.cpp Particle.cpp ParticleConfig.cpp Player.cpp rect.cpp rgb.cpp RNG.cpp Util.cpp Vec2.cpp LightSystem.cpp Item.cpp
 OBJECTS=$(SOURCES:%.cpp=%.o)
 EXECUTABLE=main
 

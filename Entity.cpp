@@ -118,6 +118,43 @@ void Entity::physicsHandleWalking(Grid& grid) {
 		Entity::vel.x *= current_friction;
 	}
 
+	/* Handle walking/collision right */
+	const float distance = 16.0;
+	const Vec2 dir_right(1.0, 0.0);
+
+	float rays_right[] = {
+		grid.raycast(Entity::pos + grid.offset                                                         , dir_right, distance, 9999.0),
+		grid.raycast(Entity::pos + grid.offset + (Entity::headOffset * Vec2(0.0, 1.0)) + Vec2(0.0, 2.0), dir_right, distance, 9999.0),
+		grid.raycast(Entity::pos + grid.offset + (Entity::feetOffset * Vec2(0.0, 1.0)) - Vec2(0.0, 2.0), dir_right, distance, 9999.0)
+	};
+
+	unsigned int rays_right_min = Util::min((unsigned int)rays_right[0], (unsigned int)rays_right[1], (unsigned int)rays_right[2]);
+
+	if (rays_right_min < distance) {
+		if (Entity::walkdir == Entity::WalkState::RIGHT) {
+			Entity::vel.x = 0;
+			Entity::walkstate = Entity::WalkState::STANDING;
+		}
+	}
+
+	/* Handle walking/collision left */
+	const Vec2 dir_left(-1.0, 0.0);
+	
+	float rays_left[] = {
+		grid.raycast(Entity::pos + grid.offset                                                         , dir_left, distance, 9999.0),
+		grid.raycast(Entity::pos + grid.offset + (Entity::headOffset * Vec2(0.0, 1.0)) + Vec2(0.0, 2.0), dir_left, distance, 9999.0),
+		grid.raycast(Entity::pos + grid.offset + (Entity::feetOffset * Vec2(0.0, 1.0)) - Vec2(0.0, 2.0), dir_left, distance, 9999.0)
+	};
+
+	unsigned int rays_left_min = Util::min((unsigned int)rays_left[0], (unsigned int)rays_left[1], (unsigned int)rays_left[2]);
+
+	if (rays_left_min < distance) {
+		if (Entity::walkdir == Entity::WalkState::LEFT) {
+			Entity::vel.x = 0;
+			Entity::walkstate = Entity::WalkState::STANDING;
+		}
+	}
+
 	Entity::pos.x += Entity::vel.x;
 }
 

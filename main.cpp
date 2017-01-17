@@ -16,6 +16,7 @@
 #include "Entity.hpp"
 #include "Player.hpp"
 #include "Util.hpp"
+#include "LightSystem.hpp"
 
 void handle_events(sf::RenderWindow& window) {
 	sf::Event event;
@@ -46,6 +47,7 @@ int main(int argc, char *argv[]) {
 
 	/* Day/Night cycle */
 	DayCycle daycycle(500, RGB(61, 159, 203));
+	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */
 	//Grid grid = Grid(grid_framebuffer, 150, 50, "assets/tileset.png");
@@ -100,7 +102,7 @@ int main(int argc, char *argv[]) {
 		outlineShader.setUniform("time", elapsed);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-			player.jump();
+			player.jump(1.1);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 			player.walk(Entity::WalkState::LEFT);
@@ -111,6 +113,10 @@ int main(int argc, char *argv[]) {
 		
 		if ((!sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::D))) {
 			player.walkstate = Entity::WalkState::STANDING;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+			player.vel.y -= 0.3;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -138,6 +144,8 @@ int main(int argc, char *argv[]) {
 		//outlineShader.setUniform("step", 1.0f / 75.0f);
 		player.render(window, grid.offset);
 
+		lightsystem.render(window);
+			
 		window.display();
 	}
 
