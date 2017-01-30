@@ -11,6 +11,11 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::acc = Vec2(0.75, 0.0);
 	Player::maxvel = Vec2(3.5, 7.75);
 
+	Player::inventory = std::vector<blockid>();
+	Player::inventory.push_back(BLOCK_GRASS);
+	Player::inventory.push_back(BLOCK_WOOD);
+	Player::inventory.push_back(BLOCK_COBBLESTONE);
+
 	/* define render order */
 	Player::limb_z_index = std::vector<size_t>();
 	Player::limb_z_index.push_back( 1);
@@ -66,6 +71,12 @@ void Player::update(Grid& grid) {
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
 	Player::body.renderAll(window, Player::limb_z_index, Player::pos + off);
+
+	for (size_t i = 0; i < Player::inventory.size(); ++i) {
+		Block invblock(Player::inventory.at(i));
+		
+		invblock.render(window, Player::pos + Vec2(-50 + 40 * (int)i, -80), off);
+	}
 }
 
 void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {

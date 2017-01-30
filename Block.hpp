@@ -2,6 +2,7 @@
 #define BLOCK_HPP
 
 #include "rgb.hpp"
+#include "Vec2.hpp"
 #include <SFML/Graphics.hpp>
 
 typedef enum {
@@ -114,6 +115,7 @@ public:
 	
 	bool collides();
 	void render(sf::RenderTexture& window, int x, int y, float xoff, float yoff);
+	void render(sf::RenderWindow& window, Vec2 pos, Vec2 offset = Vec2(0, 0));
 	int maxDamage();
 
 	static void setGlobalTileset(sf::Texture& texture);

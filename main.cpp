@@ -34,20 +34,14 @@ int main(int argc, char *argv[]) {
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
-	sf::RenderTexture grid_framebuffer;
-	if (!grid_framebuffer.create(window.getSize().x, window.getSize().y)) {
-		puts("failed to create grid framebuffer");
-	}
-	grid_framebuffer.clear(sf::Color(0, 0, 0, 0));
-
 	/* Day/Night cycle */
-	DayCycle daycycle(5000, RGB(61, 159, 203));
+	DayCycle daycycle(1000, RGB(61, 159, 203));
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */
-	//Grid grid = Grid(grid_framebuffer, 150, 50, "assets/tileset.png");
-	//grid.generate();
-	Grid grid(grid_framebuffer, "world0.sav", "assets/tileset.png");
+	Grid grid(screenSize, 150, 50, "assets/tileset.png");
+	grid.generate();
+	//Grid grid(grid_framebuffer, "world0.sav", "assets/tileset.png");
 
 	/* Outline Shader */
 	sf::Shader druggedShader;
@@ -56,14 +50,25 @@ int main(int argc, char *argv[]) {
 	}
 	druggedShader.setUniform("texture", sf::Shader::CurrentTexture);
 	druggedShader.setUniform("time", 0.0f);
+	druggedShader.setUniform("resolution", sf::Vector2f(screenSize.x, screenSize.y));
+	
 
 	/* Fragment Shader */
-	sf::Shader wateryShader;
-	if (!wateryShader.loadFromFile("assets/shaders/watery.frag", sf::Shader::Fragment)) {
+	sf::Shader backgroundShader;
+	if (!backgroundShader.loadFromFile("assets/shaders/background.frag", sf::Shader::Fragment)) {
 		puts("failed to load shader #2!");
 	}
-	wateryShader.setUniform("texture", sf::Shader::CurrentTexture);
-	wateryShader.setUniform("time", 0.0f);
+	backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
+	
+	/* Inventory Hotbar */
+	sf::Texture invHotbarTex;
+	if (!invHotbarTex.loadFromFile("assets/inventory.png")) {
+		puts("failed to load invhotbartex!");
+	}
+
+	sf::Sprite invHotbar;
+	invHotbar.setTexture(invHotbarTex);
+	invHotbar.setPosition(screenSize.x / 2.0 - (float)invHotbarTex.getSize().x / 2.0, screenSize.y - (float)invHotbarTex.getSize().y * 1.25);
 
 	Player player;
 	player.setPos(Vec2(400.0, 400.0));
@@ -73,6 +78,7 @@ int main(int argc, char *argv[]) {
 	while (window.isOpen()) {
 		handle_events(window);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			Block b(current_block_id);
@@ -91,8 +97,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		
-		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
-		wateryShader.setUniform("time", elapsed);
 		druggedShader.setUniform("time", elapsed);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -110,9 +114,9 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			player.vel.y -= 0.3;
-			if (player.vel.y < -10.0)
-				player.vel.y = -10.0;
+			player.vel.y -= 0.65;
+			if (player.vel.y < -5.0)
+				player.vel.y = -5.0;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -130,24 +134,25 @@ int main(int argc, char *argv[]) {
 
 		/* Rendering: */
 		daycycle.render(window, grid);
-		grid.window->clear(sf::Color(0, 0, 0, 0));
 
-		grid.render();
-		grid.window->display();
-		sf::Sprite grid_fb_sprite(grid.window->getTexture());
-		window.draw(grid_fb_sprite, &druggedShader);
+		//druggedShader.setUniform("offset", sf::Vector2f(grid.offset.x, grid.offset.y));
 		
-		//druggedShader.setUniform("step", 1.0f / 75.0f);
+		grid.render(window, backgroundShader);
+		
 		player.render(window, grid.offset);
-		lightsystem.setLight(0, sf::Glsl::Vec3(mouse.x / screenSize.x, 1.0 - mouse.y / screenSize.y, 2.0));
-		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
 		
+		lightsystem.setLight(0, sf::Glsl::Vec3(0.5, 0.5, 2.0 + sin(elapsed * 0.2) * 0.075));
+		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
 		lightsystem.render(window);
-			
+		
+		/* GUI */
+
+		window.draw(invHotbar);
+
 		window.display();
 	}
 
-	grid.save("world0.sav");
+	//grid.save("world0.sav");
 
 	return 0;
 

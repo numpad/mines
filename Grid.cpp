@@ -1,9 +1,11 @@
 #include "Grid.hpp"
 
+/*
 Grid::Grid(sf::RenderTexture& window, const char *filename, const char *tileset) {
 	Grid::offset = Vec2(0.0f, 0.0f);
 	Grid::blocksize = 32;
 	Grid::blocks = std::vector<Block>();
+	Grid::background_blocks = std::vector<Block>();
 	Grid::window = &window;
 
 	if (!Grid::tileset.loadFromFile(tileset)) {
@@ -35,19 +37,32 @@ Grid::Grid(sf::RenderTexture& window, const char *filename, const char *tileset)
 
 	for (int i = 0; i < loadedblocks_count; ++i) {
 		Grid::blocks.push_back(Block(loadedblocks[i]));
+		Grid::background_blocks.push_back(Block(loadedblocks[i]));
 	}
 
 	free(loadedblocks);
 }
+*/
 
-Grid::Grid(sf::RenderTexture& window, int w, int h, const char *tileset) {
+Grid::Grid(Vec2 screenSize, int w, int h, const char *tileset) {
 	Grid::width = w;
 	Grid::height = h;
 	Grid::offset = Vec2(0.0f, 0.0f);
 	Grid::blocksize = 32;
 	Grid::blocks = std::vector<Block>();
+	Grid::background_blocks = std::vector<Block>();
 	
-	Grid::window = &window;
+	if (!Grid::framebuffer.create(screenSize.x, screenSize.y)) {
+		puts("failed to create grid framebuffer");
+	}
+	Grid::framebuffer.clear(sf::Color::Transparent);
+	Grid::foreground_sprite.setTexture(Grid::framebuffer.getTexture());
+
+	if (!Grid::background_framebuffer.create(screenSize.x, screenSize.y)) {
+		puts("failed to create grid background framebuffer");
+	}
+	Grid::background_framebuffer.clear(sf::Color::Transparent);
+	Grid::background_sprite.setTexture(Grid::background_framebuffer.getTexture());
 
 	if (!Grid::tileset.loadFromFile(tileset)) {
 		puts("failed to load tileset!");
@@ -59,6 +74,7 @@ Grid::Grid(sf::RenderTexture& window, int w, int h, const char *tileset) {
 	
 	for (int i = 0; i < w * h; ++i) {
 		blocks.push_back(Block(-1));
+		background_blocks.push_back(Block(-1));
 	}
 
 }
@@ -86,22 +102,28 @@ void Grid::save(const char *filename) {
 
 
 
-Block &Grid::at(int idx) {
-	return blocks.at(idx);
-}
-
-Block& Grid::at(int x, int y) {
-	if (x < 0 || y < 0 || x >= Grid::width || y >= Grid::height)
-		return at(0);
+Block &Grid::at(int idx, bool foreground) {
+	if (foreground)
+		return blocks.at(idx);
 	
-	return Grid::at(x + y * Grid::width);
+	return background_blocks.at(idx);
 }
 
-void Grid::set(int x, int y, Block block) {
+Block& Grid::at(int x, int y, bool foreground) {
+	if (x < 0 || y < 0 || x >= Grid::width || y >= Grid::height)
+		return at(0, foreground);
+	
+	return Grid::at(x + y * Grid::width, foreground);
+}
+
+void Grid::set(int x, int y, Block block, bool foreground) {
 	if (x < 0 || y < 0 || x >= Grid::width || y >= Grid::height)
 		return;
 	
-	Grid::blocks.at(x + y * Grid::width) = block;
+	if (foreground)
+		Grid::blocks.at(x + y * Grid::width) = block;
+	else
+		Grid::background_blocks.at(x + y * Grid::width) = block;
 }
 
 void Grid::moveCamera(float x, float y) {
@@ -168,8 +190,8 @@ Block& Grid::atPoint(Vec2 p) {
 
 void Grid::render() {
 	Grid::render(-Grid::offset.x / 32, -Grid::offset.y / 32,
-	            ((int)(*Grid::window).getSize().x / 32) + 32,
-				((int)(*Grid::window).getSize().y / 32) + 32
+	            ((int)(Grid::framebuffer).getSize().x / 32) + 32,
+				((int)(Grid::framebuffer).getSize().y / 32) + 32
 				);
 }
 
@@ -179,22 +201,48 @@ void Grid::render(int xs, int ys, int width, int height) {
 			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
 				continue;
 			
-			Grid::at(x, y).render(*Grid::window, x, y, offset.x, offset.y);
+			Grid::at(x, y, false).render(Grid::background_framebuffer, x, y, offset.x, offset.y);
 		}
 	}
+
+	for (int y = ys; y < ys + height; ++y) {
+		for (int x = xs; x < xs + width; ++x) {
+			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
+				continue;
+			
+			Grid::at(x, y).render(Grid::framebuffer, x, y, offset.x, offset.y);
+		}
+	}
+}
+
+void Grid::render(sf::RenderWindow &window, sf::Shader &shader) {
+	/* Clear framebuffer */
+	Grid::background_framebuffer.clear(sf::Color::Transparent);
+	Grid::framebuffer.clear(sf::Color::Transparent);
+
+	/* Draw blocks to framebuffer */
+	Grid::render();
+
+	/* Display content */
+	Grid::background_framebuffer.display();
+	Grid::framebuffer.display();
+
+	window.draw(Grid::background_sprite, &shader);
+	window.draw(Grid::foreground_sprite);
 }
 
 void Grid::generate() {
 	for (int y = 0; y < Grid::height; ++y) {
 		for (int x = 0; x < Grid::width; ++x) {
-			if (x == 4) {
-				Grid::set(x, y, Block(BLOCK_COBBLESTONE));
-			}
-			
+
 			if (y > Grid::height / 3) {
 				Grid::set(x, y, Block(BLOCK_DIRT));
+				Grid::set(x, y, Block(BLOCK_DIRT), false);
 			} else if (y == Grid::height / 3) {
 				Grid::set(x, y, Block(BLOCK_GRASS));
+				Grid::set(x, y - 1, Block(BLOCK_GRASS), false);
+				Grid::set(x, y, Block(BLOCK_DIRT), false);
+				
 			}
 
 		}

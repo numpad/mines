@@ -1,12 +1,13 @@
 #include "LightSystem.hpp"
 
 LightSystem::LightSystem(unsigned int width, unsigned int height) {
-	LightSystem::lights_count = 3;
+	LightSystem::lights_count = 26 * 24;
 	LightSystem::lights = (sf::Glsl::Vec3 *)malloc(LightSystem::lights_count * sizeof(sf::Glsl::Vec3));
 
-	LightSystem::lights[0] = sf::Glsl::Vec3(0.0, 0.0, 1.5);
+	LightSystem::lights[0] = sf::Glsl::Vec3(0.0, 1.0, 1.5);
 	LightSystem::lights[1] = sf::Glsl::Vec3(1.0, 1.0, 1.5);
-	LightSystem::lights[2] = sf::Glsl::Vec3(0.5, 0.5, 2.0);
+	LightSystem::lights[2] = sf::Glsl::Vec3(0.5, 0.5, 1.5);
+	
 
 	LightSystem::darkness.create(width, height);
 	LightSystem::darkness.clear(sf::Color::Black);

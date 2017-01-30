@@ -72,6 +72,18 @@ void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yo
 	Block::sprite.setColor(sf::Color::White);
 }
 
+
+void Block::render(sf::RenderWindow& window, Vec2 pos, Vec2 offset) {
+	if (Block::id < 0)
+		return;
+	
+	Block::sprite.setColor(Block::tint.toColor());
+	
+	Block::sprite.setPosition(pos.x + offset.x, pos.y + offset.y);
+	window.draw(Block::sprite);
+	Block::sprite.setColor(sf::Color::White);
+}
+
 void Block::setTint(RGB tint) {
 	Block::tint = tint;
 }

@@ -1,4 +1,5 @@
 uniform sampler2D texture;
+uniform const int lights_count;
 uniform vec3 lights[];
 uniform float global_illumination;
 
@@ -15,8 +16,6 @@ void main() {
 	
 	float alpha = 1.0;
 	alpha *= light(0, gl_TexCoord[0].xy);
-	alpha *= light(1, gl_TexCoord[0].xy);
-	alpha *= light(2, gl_TexCoord[0].xy);
 	
 
 	gl_FragColor = vec4(texture2D(texture, gl_TexCoord[0].xy).rgb, alpha);

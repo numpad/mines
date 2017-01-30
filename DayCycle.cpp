@@ -36,7 +36,7 @@ void DayCycle::update() {
 	}
 }
 
-void DayCycle::render(sf::RenderWindow& window, Grid grid) {
+void DayCycle::render(sf::RenderWindow& window, Grid &grid) {
 	DayCycle::update();
 	window.clear(DayCycle::get_color());
 

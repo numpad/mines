@@ -19,7 +19,7 @@ public:
 	unsigned int get_day();
 
 	void update();
-	void render(sf::RenderWindow& window, Grid grid);
+	void render(sf::RenderWindow& window, Grid &grid);
 };
 
 #endif

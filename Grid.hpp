@@ -11,16 +11,20 @@
 
 class Grid {
 	int blocksize;
+
 public:
-	sf::RenderTexture *window;
+	sf::RenderTexture framebuffer, background_framebuffer;
+	sf::Sprite background_sprite, foreground_sprite;
+
 	sf::Texture tileset;
 	int width, height;
 	Vec2 offset;
 	
 	std::vector<Block> blocks;
+	std::vector<Block> background_blocks;
 
 	Grid(sf::RenderTexture&, const char *filename, const char *tileset);
-	Grid(sf::RenderTexture&, int width, int height, const char *tileset);
+	Grid(Vec2 screenSize, int width, int height, const char *tileset);
 	~Grid();
 
 	void moveCamera(float x, float y);
@@ -30,9 +34,9 @@ public:
 
 	void generate();
 
-	Block& at(int idx);
-	Block& at(int x, int y);
-	void set(int x, int y, Block b);
+	Block& at(int idx, bool foreground = true);
+	Block& at(int x, int y, bool foreground = true);
+	void set(int x, int y, Block b, bool foreground = true);
 	
 	int neighbors(int x, int y);
 	float raycast(Vec2 start, Vec2 dir, float len = -1.0, float infinity = -1.0);
@@ -43,6 +47,8 @@ public:
 
 	void render();
 	void render(int xs, int ys, int width, int height);
+
+	void render(sf::RenderWindow &window, sf::Shader &shader);
 };
 
 #endif
