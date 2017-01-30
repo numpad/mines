@@ -4,6 +4,7 @@
 #include "rgb.hpp"
 #include "Block.hpp"
 #include "Vec2.hpp"
+#include "Random.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <stdio.h>

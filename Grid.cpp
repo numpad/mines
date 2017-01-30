@@ -232,6 +232,55 @@ void Grid::render(sf::RenderWindow &window, sf::Shader &shader) {
 }
 
 void Grid::generate() {
+	#define place(name) Grid::set(x, y, Block(BLOCK_ ## name));
+	#define placeabove(name) Grid::set(x, y - 1, Block(BLOCK_ ## name));
+	#define placenabove(name,n) Grid::set(x, y - n, Block(BLOCK_ ## name));
+	#define placebehind(name) Grid::set(x, y, Block(BLOCK_ ## name), false);
+	#define placebehindabove(name) Grid::set(x, y - 1, Block(BLOCK_ ## name), false);
+	#define placebehindnabove(name,n) Grid::set(x, y - n, Block(BLOCK_ ## name), false);
+	#define placebehindabovexy(name,dx,dy) Grid::set(x + dx, y - dy, Block(BLOCK_ ## name), false);
+	Random randomHeight(Grid::height * (1./3.) - 2, Grid::height * (1./3.) + 2);
+	Random randomHeightOffset(-2, 2);
+	Random randomPercent(0.0, 1.0);
+
+	for (int x = 0; x < Grid::width; ++x) {
+		int currentMaxHeight = randomHeight();
+		for (int y = Grid::height - 1; y >= currentMaxHeight; --y) {
+			place(DIRT);
+			placeabove(GRASS);
+			
+			if (y == currentMaxHeight && randomPercent() < 0.075) {
+				placebehindabove(DIRT);
+
+				int treeHeight = randomPercent() * 4.0 + 3.0;
+				for (int i = 0; i < treeHeight; ++i) {
+					placebehindnabove(TREE, i - 2);
+				}
+				
+				placebehindnabove(LEAVES, treeHeight - 2);
+				placebehindnabove(LEAVES, treeHeight - 3);
+
+				placebehindabovexy(LEAVES, -1, treeHeight - 2);
+				placebehindabovexy(LEAVES, +1, treeHeight - 2);
+				
+				
+			} else {
+				placebehindabove(GRASS);
+				
+			}
+
+			if (y > Grid::height / 5.0 + randomHeight()) {
+				placebehind(STONE);
+			} else {
+				placebehind(DIRT);
+			}
+		}
+	}
+	#undef place
+	#undef placeabove
+	#undef placebehind
+	#undef placebehindabove
+	/*
 	for (int y = 0; y < Grid::height; ++y) {
 		for (int x = 0; x < Grid::width; ++x) {
 
@@ -247,4 +296,5 @@ void Grid::generate() {
 
 		}
 	}
+	*/
 }

@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 		/* GUI */
 
 		window.draw(invHotbar);
-
+		player.renderInventory(window, Vec2(invHotbar.getPosition().x + 8.0, invHotbar.getPosition().y + 8.0));
 		window.display();
 	}
 

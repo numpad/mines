@@ -71,14 +71,16 @@ void Player::update(Grid& grid) {
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
 	Player::body.renderAll(window, Player::limb_z_index, Player::pos + off);
-
-	for (size_t i = 0; i < Player::inventory.size(); ++i) {
-		Block invblock(Player::inventory.at(i));
-		
-		invblock.render(window, Player::pos + Vec2(-50 + 40 * (int)i, -80), off);
-	}
 }
 
 void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 	Player::body.renderAll(window, Player::limb_z_index, shader, Player::pos + off);
+}
+
+void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
+	for (size_t i = 0; i < Player::inventory.size(); ++i) {
+		Block invblock(Player::inventory.at(i));
+		
+		invblock.render(window, off + Vec2(i * 48, 0));
+	}
 }

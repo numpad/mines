@@ -24,6 +24,8 @@ public:
 	void update(Grid& grid);
 	void render(sf::RenderWindow& window, Vec2 off = Vec2(0.0f, 0.0f));
 	void render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off = Vec2(0.0f, 0.0f));
+
+	void renderInventory(sf::RenderWindow &window, Vec2 off = Vec2(0, 0));
 };
 
 #endif
