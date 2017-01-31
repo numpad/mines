@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player() : Entity("assets/player/skin.png"), inventory(10) {
+Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -33,7 +33,13 @@ Player::Player() : Entity("assets/player/skin.png"), inventory(10) {
 	Player::inventory.add(InventoryStack( 8, BLOCK_GLASS));
 	Player::inventory.add(InventoryStack(30, BLOCK_COBBLESTONE));
 	
+	if (!Player::inventoryHotbarTexture.loadFromFile("assets/gui/inventory.png")) {
+		puts("[Player] failed loading 'assets/gui/inventory.png'!");
+	}
 	
+	Player::inventoryHotbarSprite.setTexture(Player::inventoryHotbarTexture);
+	Player::inventoryHotbarSprite.setPosition(screenSize.x / 2.0 - (float)Player::inventoryHotbarTexture.getSize().x / 2.0, screenSize.y - (float)Player::inventoryHotbarTexture.getSize().y * 1.25);
+
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  0)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -6)));
@@ -89,6 +95,8 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 /* Inventory Management */
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
+	window.draw(Player::inventoryHotbarSprite);
+
 	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
 		Block invblock(Player::inventory.at(i).get());
 		
@@ -98,7 +106,7 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 			yoff = -fabs(sin(elapsed * 4.0) * 7.0);
 		}
 		
-		invblock.render(window, off + Vec2(i * 40, yoff));
+		invblock.render(window, Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff));
 	}
 }
 

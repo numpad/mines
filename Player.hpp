@@ -13,11 +13,15 @@ class Player : public Entity {
 public:
 	Limb *head, *armb, *armf, *legb, *legf;
 
+	/* Inventory */
+	sf::Texture inventoryHotbarTexture;
+	sf::Sprite inventoryHotbarSprite;
+
 	enum PlaceMode {
 		PLACE_BACKGROUND, PLACE_FOREGROUND
 	};
 
-	Player();
+	Player(Vec2 screenSize);
 	
 	void animate(Grid& grid);
 	void update(Grid& grid);

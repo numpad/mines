@@ -41,17 +41,6 @@ int main(int argc, char *argv[]) {
 	/* World generation */
 	Grid grid(screenSize, 150, 50, "assets/tileset.png");
 	grid.generate();
-	//Grid grid(grid_framebuffer, "world0.sav", "assets/tileset.png");
-
-	/* Outline Shader */
-	sf::Shader druggedShader;
-	if (!druggedShader.loadFromFile("assets/shaders/drugged.frag", sf::Shader::Fragment)) {
-		puts("failed to load shader!");
-	}
-	druggedShader.setUniform("texture", sf::Shader::CurrentTexture);
-	druggedShader.setUniform("time", 0.0f);
-	druggedShader.setUniform("resolution", sf::Vector2f(screenSize.x, screenSize.y));
-	
 
 	/* Fragment Shader */
 	sf::Shader backgroundShader;
@@ -59,19 +48,9 @@ int main(int argc, char *argv[]) {
 		puts("failed to load shader #2!");
 	}
 	backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
-	
-	/* Inventory Hotbar */
-	sf::Texture invHotbarTex;
-	if (!invHotbarTex.loadFromFile("assets/inventory.png")) {
-		puts("failed to load invhotbartex!");
-	}
 
-	sf::Sprite invHotbar;
-	invHotbar.setTexture(invHotbarTex);
-	invHotbar.setPosition(screenSize.x / 2.0 - (float)invHotbarTex.getSize().x / 2.0, screenSize.y - (float)invHotbarTex.getSize().y * 1.25);
-
-	Player player;
-	player.setPos(Vec2(0.0, 000.0));
+	Player player(screenSize);
+	player.setPos(Vec2(400.0, 400.0));
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -127,6 +106,7 @@ int main(int argc, char *argv[]) {
 
 		for (int i = 0; i < 10; ++i) {
 			if (sf::Keyboard::isKeyPressed(
+				/* Don't make me explain this, it works. No idea why (i - 5) works, but it does. */
 				static_cast<sf::Keyboard::Key>((static_cast<int>(sf::Keyboard::Num0) + (i - 5)) % 10 + static_cast<int>(sf::Keyboard::Num0))
 			)) {
 				player.selectItem(i);
@@ -150,8 +130,7 @@ int main(int argc, char *argv[]) {
 		
 		/* GUI */
 
-		window.draw(invHotbar);
-		player.renderInventory(window, Vec2(invHotbar.getPosition().x + 4.0, invHotbar.getPosition().y + 4.0));
+		player.renderInventory(window);
 		window.display();
 	}
 
