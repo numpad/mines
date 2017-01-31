@@ -96,8 +96,6 @@ int main(int argc, char *argv[]) {
 				current = Block(-1);
 			}
 		}
-		
-		druggedShader.setUniform("time", elapsed);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			player.jump(1.1);
@@ -119,36 +117,25 @@ int main(int argc, char *argv[]) {
 				player.vel.y = -5.0;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-			current_block_id += 1;
-			printf("Block: %d\n", current_block_id);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-			current_block_id -= 1;
-			printf("Block: %d\n", current_block_id);
-		}
-
-		//player.head->getAngle() = mouse.angle(player.head->pos + player.pos + player.head->offset);
+		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
 
 		/* Rendering: */
 		daycycle.render(window, grid);
 
-		//druggedShader.setUniform("offset", sf::Vector2f(grid.offset.x, grid.offset.y));
-		
 		grid.render(window, backgroundShader);
 		
 		player.render(window, grid.offset);
 		
-		lightsystem.setLight(0, sf::Glsl::Vec3(0.5, 0.5, 2.0 + sin(elapsed * 0.2) * 0.075));
+		lightsystem.setLight(0, sf::Glsl::Vec3(0.5, 0.5, 2.0));
 		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
 		lightsystem.render(window);
 		
 		/* GUI */
 
 		window.draw(invHotbar);
-		player.renderInventory(window, Vec2(invHotbar.getPosition().x + 8.0, invHotbar.getPosition().y + 8.0));
+		player.renderInventory(window, Vec2(invHotbar.getPosition().x + 4.0, invHotbar.getPosition().y + 4.0));
 		window.display();
 	}
 

@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player() : Entity("assets/player/skin.png") {
+Player::Player() : Entity("assets/player/skin.png"), inventory(10) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -11,11 +11,6 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::acc = Vec2(0.75, 0.0);
 	Player::maxvel = Vec2(3.5, 7.75);
 
-	Player::inventory = std::vector<blockid>();
-	Player::inventory.push_back(BLOCK_GRASS);
-	Player::inventory.push_back(BLOCK_WOOD);
-	Player::inventory.push_back(BLOCK_COBBLESTONE);
-
 	/* define render order */
 	Player::limb_z_index = std::vector<size_t>();
 	Player::limb_z_index.push_back( 1);
@@ -25,6 +20,11 @@ Player::Player() : Entity("assets/player/skin.png") {
 	Player::limb_z_index.push_back( 0);
 	Player::limb_z_index.push_back( 2);
 
+	Player::inventory.add(InventoryStack( 3, BLOCK_TNT));
+	Player::inventory.add(InventoryStack(30, BLOCK_GRASS));
+	Player::inventory.add(InventoryStack(10, BLOCK_ICE));
+	
+	
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  0)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -6)));
@@ -78,9 +78,9 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 }
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
-	for (size_t i = 0; i < Player::inventory.size(); ++i) {
-		Block invblock(Player::inventory.at(i));
+	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
+		Block invblock(Player::inventory.at(i).get());
 		
-		invblock.render(window, off + Vec2(i * 48, 0));
+		invblock.render(window, off + Vec2(i * 40, 0));
 	}
 }

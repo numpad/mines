@@ -5,6 +5,7 @@
 #include "Entity.hpp"
 #include "Vec2.hpp"
 #include "Block.hpp"
+#include "Inventory.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -14,7 +15,7 @@ class Player : public Entity {
 	sf::Clock timeAlive;
 	float legAnimation;
 
-	std::vector<blockid> inventory;
+	Inventory inventory;
 public:
 	Limb *head, *armb, *armf, *legb, *legf;
 
