@@ -21,8 +21,9 @@ size_t InventoryStack::spaceLeft() {
 
 size_t InventoryStack::add(size_t elements) {
 	if (InventoryStack::spaceLeft() < elements) {
+		size_t spaceLeft = InventoryStack::spaceLeft();
 		InventoryStack::count = InventoryStack::size;
-		return elements - InventoryStack::spaceLeft();
+		return elements - spaceLeft;
 	}
 	InventoryStack::count += elements;
 	return 0;
@@ -72,6 +73,17 @@ InventoryStack &Inventory::at(size_t idx) {
 }
 
 bool Inventory::add(InventoryStack elems) {
+	/* Check if Inventory contains stack of same type */
+	for (size_t i = 0; i < Inventory::getSize(); ++i) {
+		if (Inventory::at(i).type == elems.type) {
+			/* Add elements if stack type is */
+			elems.count = Inventory::at(i).add(elems.count);
+			
+			if (elems.count == 0)
+				return true;
+		}
+	}
+
 	for (size_t i = 0; i < Inventory::getSize(); ++i) {
 		if (Inventory::at(i).isFree()) {
 			Inventory::at(i) = elems;

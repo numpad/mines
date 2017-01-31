@@ -71,29 +71,30 @@ int main(int argc, char *argv[]) {
 	invHotbar.setPosition(screenSize.x / 2.0 - (float)invHotbarTex.getSize().x / 2.0, screenSize.y - (float)invHotbarTex.getSize().y * 1.25);
 
 	Player player;
-	player.setPos(Vec2(400.0, 400.0));
+	player.setPos(Vec2(0.0, 000.0));
 
 	sf::Clock clock;
-	int current_block_id = 0;
 	while (window.isOpen()) {
 		handle_events(window);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			Block b(current_block_id);
-			Block& current = grid.atPoint(mouse.x, mouse.y);
+			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
 			
 			if (!current.collides()) {
-				current = b;
+				Block blockToPlace(player.takeItem());
+				if (blockToPlace.id != BLOCK_AIR)
+					current = Block(blockToPlace);
 			}
 		}
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			Block& current = grid.atPoint(mouse.x, mouse.y);
+			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
 
 			current.damage += 1;
 			if (current.damage > current.maxDamage()) {
-				current = Block(-1);
+				player.collectItems(current.id);
+				current = Block(BLOCK_AIR);
 			}
 		}
 
@@ -111,10 +112,25 @@ int main(int argc, char *argv[]) {
 			player.walkstate = Entity::WalkState::STANDING;
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
+			player.setPlaceMode(Player::PLACE_BACKGROUND);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+			player.setPlaceMode(Player::PLACE_FOREGROUND);
+		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 			player.vel.y -= 0.65;
 			if (player.vel.y < -5.0)
 				player.vel.y = -5.0;
+		}
+
+		for (int i = 0; i < 10; ++i) {
+			if (sf::Keyboard::isKeyPressed(
+				static_cast<sf::Keyboard::Key>((static_cast<int>(sf::Keyboard::Num0) + (i - 5)) % 10 + static_cast<int>(sf::Keyboard::Num0))
+			)) {
+				player.selectItem(i);
+			}
 		}
 
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;

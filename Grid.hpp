@@ -43,8 +43,8 @@ public:
 	float raycast(Vec2 start, Vec2 dir, float len = -1.0, float infinity = -1.0);
 
 	void point_to_grid(int px, int py, int& x, int& y);
-	Block& atPoint(int px, int py);
-	Block& atPoint(Vec2 p);
+	Block& atPoint(int px, int py, bool foreground = true);
+	Block& atPoint(Vec2 p, bool foreground = true);
 
 	void render();
 	void render(int xs, int ys, int width, int height);

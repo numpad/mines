@@ -178,14 +178,14 @@ void Grid::point_to_grid(int px, int py, int& x, int& y) {
 	y = (py - Grid::offset.y) / 32;
 }
 
-Block& Grid::atPoint(int px, int py) {
+Block& Grid::atPoint(int px, int py, bool foreground) {
 	int bx, by;
 	Grid::point_to_grid(px, py, bx, by);
-	return Grid::at(bx, by);
+	return Grid::at(bx, by, foreground);
 }
 
-Block& Grid::atPoint(Vec2 p) {
-	return Grid::atPoint(p.x, p.y);
+Block& Grid::atPoint(Vec2 p, bool foreground) {
+	return Grid::atPoint(p.x, p.y, foreground);
 }
 
 void Grid::render() {

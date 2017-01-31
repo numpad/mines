@@ -10,14 +10,12 @@
 #include <vector>
 
 class Player : public Entity {
-	std::vector<size_t> limb_z_index;
-	
-	sf::Clock timeAlive;
-	float legAnimation;
-
-	Inventory inventory;
 public:
 	Limb *head, *armb, *armf, *legb, *legf;
+
+	enum PlaceMode {
+		PLACE_BACKGROUND, PLACE_FOREGROUND
+	};
 
 	Player();
 	
@@ -27,6 +25,24 @@ public:
 	void render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off = Vec2(0.0f, 0.0f));
 
 	void renderInventory(sf::RenderWindow &window, Vec2 off = Vec2(0, 0));
+	blockid getItem();
+	blockid takeItem();
+	size_t collectItems(blockid type, size_t count = 1);
+	void selectItem(size_t index);
+
+	void setPlaceMode(PlaceMode);
+	bool getPlaceMode();
+private:
+	std::vector<size_t> limb_z_index;
+	
+	sf::Clock timeAlive;
+	float legAnimation;
+
+	/* Inventory */
+	size_t currentItemSelected;
+	Inventory inventory;
+	PlaceMode placeMode;
+
 };
 
 #endif
