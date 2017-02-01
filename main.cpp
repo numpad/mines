@@ -30,7 +30,7 @@ void handle_events(sf::RenderWindow& window) {
 }
 
 int main(int argc, char *argv[]) {
-	Vec2 screenSize = Vec2(800.0, 740.0);
+	Vec2 screenSize = Vec2(800, 740);
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 	while (window.isOpen()) {
 		handle_events(window);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-		float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
+		//float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
