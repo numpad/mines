@@ -7,6 +7,10 @@ void Block::setGlobalTileset(sf::Texture& texture) {
 	Block::tileset = &texture;
 }
 
+sf::IntRect Block::getBlockSubRect(blockid b_id) {
+	return sf::IntRect((b_id % 10) * 32, (b_id / 10) * 32, 32, 32);
+}
+
 Block::Block(int block_id) : tint(255, 255, 255) {
 	/* Set ID */
 	Block::id = (blockid)block_id;

@@ -40,7 +40,7 @@ public:
 	void set(int x, int y, Block b, bool foreground = true);
 	
 	int neighbors(int x, int y);
-	float raycast(Vec2 start, Vec2 dir, float len = -1.0, float infinity = -1.0);
+	float raycast(Vec2 start, Vec2 dir, float len = 100.0, float infinity = -1.0);
 
 	void point_to_grid(int px, int py, int& x, int& y);
 	Block& atPoint(int px, int py, bool foreground = true);

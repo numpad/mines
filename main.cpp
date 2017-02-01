@@ -17,6 +17,8 @@
 #include "Player.hpp"
 #include "Util.hpp"
 #include "LightSystem.hpp"
+#include "Item.hpp"
+#include "Random.hpp"
 
 void handle_events(sf::RenderWindow& window) {
 	sf::Event event;
@@ -30,8 +32,8 @@ void handle_events(sf::RenderWindow& window) {
 }
 
 int main(int argc, char *argv[]) {
-	Vec2 screenSize = Vec2(800, 740);
-	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
+	Vec2 screenSize = Vec2(1920, 1080); // 800 x 740
+	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close | sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
 
 	/* Day/Night cycle */
@@ -51,6 +53,8 @@ int main(int argc, char *argv[]) {
 
 	Player player(screenSize);
 	player.setPos(Vec2(400.0, 400.0));
+
+	std::vector<Item> items = std::vector<Item>();
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -98,6 +102,15 @@ int main(int argc, char *argv[]) {
 			player.setPlaceMode(Player::PLACE_FOREGROUND);
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+			Random throwVelx(-0.85, 0.85);
+			Random throwVely(3.5, 9.5);
+			blockid thrownItem = player.takeItem();
+			if (thrownItem != BLOCK_AIR)
+				items.push_back(Item(player.pos, thrownItem, Vec2(throwVelx(), -throwVely())));
+		}
+
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 			player.vel.y -= 0.65;
 			if (player.vel.y < -5.0)
@@ -116,6 +129,10 @@ int main(int argc, char *argv[]) {
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
+		
+		for (size_t i = 0; i < items.size(); ++i) {
+			items.at(i).update(grid);
+		}
 
 		/* Rendering: */
 		daycycle.render(window, grid);
@@ -124,12 +141,15 @@ int main(int argc, char *argv[]) {
 		
 		player.render(window, grid.offset);
 		
+		for (size_t i = 0; i < items.size(); ++i) {
+			items.at(i).render(window, grid.offset);
+		}
+
 		lightsystem.setLight(0, sf::Glsl::Vec3(0.5, 0.5, 2.0));
 		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
 		lightsystem.render(window);
 		
 		/* GUI */
-
 		player.renderInventory(window);
 		window.display();
 	}

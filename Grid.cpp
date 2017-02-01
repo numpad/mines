@@ -158,10 +158,13 @@ int Grid::neighbors(int xp, int yp) {
 
 
 float Grid::raycast(Vec2 start, Vec2 dir, float len, float infinity) {
+	if (dir.length() < 0.001)
+		return infinity;
+	
 	const float step = dir.length();
 	float dist = 0.0;
 
-	while (dist < len || len < 0.0) {
+	while (dist < len) {
 		if (Grid::atPoint(start.x, start.y).collides()) {
 			return dist;
 		}
@@ -247,14 +250,23 @@ void Grid::generate() {
 		int currentMaxHeight = randomHeight();
 		for (int y = Grid::height - 1; y >= currentMaxHeight; --y) {
 			place(DIRT);
-			placeabove(GRASS);
+
+			if (x > Grid::width / 2) {
+				placeabove(GRASS_SNOWY);
+			} else {
+				placeabove(GRASS);
+			}
 			
 			if (y == currentMaxHeight && randomPercent() < 0.075) {
 				placebehindabove(DIRT);
 
 				int treeHeight = randomPercent() * 4.0 + 3.0;
 				for (int i = 0; i < treeHeight; ++i) {
-					placebehindnabove(TREE, i - 2);
+					if (x > Grid::width / 2) {
+						placebehindnabove(TREE_BIRCH, i - 2);
+					} else {
+						placebehindnabove(TREE, i - 2);
+					}
 				}
 				
 				placebehindnabove(LEAVES, treeHeight - 2);
@@ -265,7 +277,11 @@ void Grid::generate() {
 				
 				
 			} else {
-				placebehindabove(GRASS);
+				if (x > Grid::width / 2) {
+					placebehindabove(GRASS_SNOWY);
+				} else {
+					placebehindabove(GRASS);
+				}
 				
 			}
 
