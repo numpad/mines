@@ -8,8 +8,8 @@
 
 class BitmapFont {
 	sf::Texture bitmap;
+	sf::Sprite charSprite;
 	sf::IntRect letterRect;
-	
 	std::vector<std::wstring> letterLayout;
 
 	float scale;
@@ -26,7 +26,8 @@ public:
 	sf::IntRect getLetterSize();
 
 	sf::IntRect getCharRect(const wchar_t);
-	void writeLetter(sf::RenderTexture &, Vec2, const wchar_t);
+	void writeLetter(sf::RenderTarget &, Vec2, const wchar_t, sf::Color fgColor = sf::Color::White);
+	void write(sf::RenderTarget &, Vec2, std::wstring, sf::Color textColor = sf::Color::White);
 };
 
 #endif

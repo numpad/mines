@@ -10,15 +10,23 @@ class BitmapText {
 	sf::RenderTexture renderText;
 	sf::Sprite renderSprite;
 
-	sf::Color backgroundColor;
+	sf::Color textColor, backgroundColor;
 
 	BitmapFont &font;
 public:
 
 	BitmapText(BitmapFont &);
 
+	/* Returns dimensions of the text */
+	Vec2 getSize();
+
+	void setBackgroundColor(sf::Color);
+	void setColor(sf::Color);
+
+	/* Writes text */
 	void write(std::wstring);
 
+	/* Draws text to screen */
 	void drawTo(sf::RenderWindow &, Vec2);
 };
 

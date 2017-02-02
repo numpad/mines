@@ -14,13 +14,15 @@ class Item {
 
 	sf::Sprite sprite;
 	sf::Clock timeAlive;
-
-	constexpr static float COLLECTABLE_AFTER_SECONDS = 1.0;
+	
+	float collectTimeout;
 
 public:
 	Vec2 pos;
 
 	Item(Vec2, blockid, Vec2 vel = Vec2(0, 0));
+
+	void setCollectTimeout(float seconds);
 
 	float secondsAlive();
 	bool collectableBy(Player &, float radius = 32.0);

@@ -11,6 +11,9 @@ BitmapFont::BitmapFont(const char *path, Vec2 charSize, float scale, Vec2 spacin
 
 	BitmapFont::letterLayout = std::vector<std::wstring>();
 
+	BitmapFont::charSprite.setTexture(BitmapFont::bitmap);
+	BitmapFont::charSprite.setScale(BitmapFont::scale, BitmapFont::scale);
+
 	BitmapFont::setDefaultLayout();
 }
 
@@ -59,6 +62,9 @@ Vec2 BitmapFont::getDimensions(std::wstring text) {
 	for (size_t i = 0; i < text.size(); ++i) {
 		if (text.at(i) == L'\n' || i == text.size() - 1) {
 			++linesCount;
+			
+			if (!(text.at(i) == L'\n'))
+				++currentLine;
 
 			if (currentLine > longestLine)
 				longestLine = currentLine;
@@ -69,7 +75,7 @@ Vec2 BitmapFont::getDimensions(std::wstring text) {
 			++currentLine;
 		}
 	}
-	
+
 	return Vec2(
 		(float)longestLine * (BitmapFont::letterRect.width * BitmapFont::scale) + (float)(longestLine) * (BitmapFont::letterSpacing.x * BitmapFont::scale),
 		(float)linesCount * (BitmapFont::letterRect.height * BitmapFont::scale) + (float)(linesCount) * (BitmapFont::letterSpacing.y * BitmapFont::scale)
@@ -87,15 +93,35 @@ sf::IntRect BitmapFont::getLetterSize() {
 	);
 }
 
-void BitmapFont::writeLetter(sf::RenderTexture &rtex, Vec2 pos, const wchar_t c) {
+void BitmapFont::writeLetter(sf::RenderTarget &rtex, Vec2 pos, const wchar_t c, sf::Color fgColor) {
 	/* do not draw space */
 	if (c == ' ')
 		return;
 	
 	const sf::IntRect charRect = BitmapFont::getCharRect(c);
-	sf::Sprite charSprite(BitmapFont::bitmap, charRect);
-	charSprite.setScale(BitmapFont::scale, BitmapFont::scale);
+	BitmapFont::charSprite.setTextureRect(charRect);
 	charSprite.setPosition(pos.x, pos.y);
+	charSprite.setColor(fgColor);
 
 	rtex.draw(charSprite);
+}
+
+void BitmapFont::write(sf::RenderTarget &rtex, Vec2 pos, std::wstring text, sf::Color textColor) {
+	size_t line_x = 0,
+	       line_y = 0;
+	for (size_t i = 0; i < text.size(); ++i) {
+		if (text.at(i) == L'\n') {
+			line_x = 0;
+			++line_y;
+			continue;
+		}
+		BitmapFont::writeLetter(rtex,
+								Vec2(
+									pos.x + ((float)line_x * BitmapFont::getLetterSize().width  + (float)line_x * BitmapFont::getSpacing().x),
+									pos.y + ((float)line_y * BitmapFont::getLetterSize().height + (float)line_y * BitmapFont::getSpacing().y)
+									),
+								text.at(i), textColor);
+		
+		++line_x;
+	}
 }

@@ -72,10 +72,12 @@ int main(int argc, char *argv[]) {
 	/* Items */
 	std::vector<Item> items = std::vector<Item>();
 
-	BitmapFont font("assets/font/font.png", Vec2(5, 8), 2);
+	BitmapFont font("assets/font/font.png", Vec2(5, 8), 1);
 
 	BitmapText healthText(font);
-	healthText.write(L"Multiline text!\n---------------\n\n * Easy to implement\n * Great results!");
+	healthText.setColor(sf::Color::Green);
+	healthText.write(L"numpad");
+	
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -93,12 +95,25 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
+			int bx, by;
+			grid.point_to_grid(mouse.x, mouse.y, bx, by);
+			Block& current = grid.at(bx, by, player.getPlaceMode());
 
-			current.damage += 1;
-			if (current.damage > current.maxDamage()) {
-				player.collectItems(current.id);
-				current = Block(BLOCK_AIR);
+			if (current.id >= 0) {
+				current.damage += 1;
+				if (current.damage > current.maxDamage()) {
+					/* Jump in random direction */
+					Random velx(-2.0, 2.0);
+					Random vely(1.75, 3.75);
+					Vec2 vel(velx(), -vely());
+
+					Item destroyedBlockItem(Vec2(bx * 32 + 16, by * 32 + 16), current.id, vel);
+					destroyedBlockItem.setCollectTimeout(0.0);
+
+					items.push_back(destroyedBlockItem);
+					//player.collectItems(current.id);
+					current = Block(BLOCK_AIR);
+				}
 			}
 		}
 
@@ -179,8 +194,9 @@ int main(int argc, char *argv[]) {
 		/* GUI */
 		player.renderInventory(window);
 		
-		healthText.drawTo(window, screenSize / 4.0);
-
+		healthText.drawTo(window, player.pos + grid.offset - Vec2(healthText.getSize().x / 2.0, 50));
+		
+		
 		window.display();
 	}
 

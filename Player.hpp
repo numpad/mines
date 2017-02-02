@@ -6,6 +6,8 @@
 #include "Vec2.hpp"
 #include "Block.hpp"
 #include "Inventory.hpp"
+#include "BitmapFont.hpp"
+#include "BitmapText.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -46,6 +48,8 @@ private:
 	size_t currentItemSelected;
 	Inventory inventory;
 	PlaceMode placeMode;
+
+	BitmapFont textFont;
 
 };
 

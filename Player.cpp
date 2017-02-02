@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10) {
+Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10), textFont("assets/font/font.png", Vec2(5, 8)) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -100,6 +100,8 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 
 	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
 		Block invblock(Player::inventory.at(i).get());
+		if (invblock.id < 0)
+			continue;
 		
 		float yoff = 0;
 		if (i == Player::currentItemSelected) {
@@ -107,7 +109,16 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 			yoff = -fabs(sin(elapsed * 4.0) * 7.0);
 		}
 		
-		invblock.render(window, Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff));
+		Vec2 invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
+		invblock.render(window, invblockPos);
+
+		/* Blocks left */
+		wchar_t itemCountStr[5];
+		swprintf(itemCountStr, 4, L"%lu", Player::inventory.at(i).count);
+
+		Player::textFont.write(window, invblockPos + Vec2(1, 1), itemCountStr, sf::Color(80, 80, 80));
+		Player::textFont.write(window, invblockPos, itemCountStr);
+		
 	}
 }
 

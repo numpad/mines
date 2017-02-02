@@ -1,7 +1,21 @@
 #include "BitmapText.hpp"
 
 BitmapText::BitmapText(BitmapFont &refFont) : font{refFont} {
-	BitmapText::backgroundColor = sf::Color::Transparent;
+	BitmapText::setBackgroundColor(sf::Color::Transparent);
+	BitmapText::setColor(sf::Color::White);
+
+}
+
+void BitmapText::setBackgroundColor(sf::Color newcolor) {
+	BitmapText::backgroundColor = newcolor;
+}
+
+void BitmapText::setColor(sf::Color textcolor) {
+	BitmapText::textColor = textcolor;
+}
+
+Vec2 BitmapText::getSize() {
+	return Vec2(BitmapText::renderText.getSize().x, BitmapText::renderText.getSize().y);
 }
 
 void BitmapText::write(std::wstring text) {
@@ -14,24 +28,7 @@ void BitmapText::write(std::wstring text) {
 
 	/* Write text to a texture */
 	BitmapText::renderText.clear(BitmapText::backgroundColor);
-
-	size_t line_x = 0,
-	       line_y = 0;
-	for (size_t i = 0; i < text.size(); ++i) {
-		if (text.at(i) == L'\n') {
-			line_x = 0;
-			++line_y;
-			continue;
-		}
-		BitmapText::font.writeLetter(BitmapText::renderText,
-		                             Vec2(
-											(float)line_x * BitmapText::font.getLetterSize().width + (float)line_x * BitmapText::font.getSpacing().x,
-											(float)line_y * BitmapText::font.getLetterSize().height + (float)line_y * BitmapText::font.getSpacing().y
-										 ),
-									 text.at(i));
-		
-		++line_x;
-	}
+	BitmapText::font.write(BitmapText::renderText, Vec2(0, 0), text, BitmapText::textColor);
 	BitmapText::renderText.display();
 
 	/* Create Sprite */
