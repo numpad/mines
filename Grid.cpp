@@ -77,6 +77,11 @@ Grid::Grid(Vec2 screenSize, int w, int h, const char *tileset) {
 		background_blocks.push_back(Block(-1));
 	}
 
+	if (!Grid::backgroundShader.loadFromFile("assets/shaders/background.frag", sf::Shader::Fragment)) {
+		puts("[Grid] failed to load shader #2!");
+	}
+	Grid::backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
+
 }
 
 Grid::~Grid() {
@@ -218,7 +223,7 @@ void Grid::render(int xs, int ys, int width, int height) {
 	}
 }
 
-void Grid::render(sf::RenderWindow &window, sf::Shader &shader) {
+void Grid::render(sf::RenderWindow &window) {
 	/* Clear framebuffer */
 	Grid::background_framebuffer.clear(sf::Color::Transparent);
 	Grid::framebuffer.clear(sf::Color::Transparent);
@@ -230,7 +235,7 @@ void Grid::render(sf::RenderWindow &window, sf::Shader &shader) {
 	Grid::background_framebuffer.display();
 	Grid::framebuffer.display();
 
-	window.draw(Grid::background_sprite, &shader);
+	window.draw(Grid::background_sprite, &(Grid::backgroundShader));
 	window.draw(Grid::foreground_sprite);
 }
 

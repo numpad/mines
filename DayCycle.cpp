@@ -23,6 +23,10 @@ unsigned int DayCycle::get_day() {
 	return DayCycle::days;
 }
 
+bool DayCycle::is_night() {
+	return DayCycle::get_darkness() < 0.4;
+}
+
 void DayCycle::update() {
 	if (DayCycle::sunrise) ++daytime;
 	else                   --daytime;

@@ -16,6 +16,7 @@ class Grid {
 public:
 	sf::RenderTexture framebuffer, background_framebuffer;
 	sf::Sprite background_sprite, foreground_sprite;
+	sf::Shader backgroundShader;
 
 	sf::Texture tileset;
 	int width, height;
@@ -49,7 +50,7 @@ public:
 	void render();
 	void render(int xs, int ys, int width, int height);
 
-	void render(sf::RenderWindow &window, sf::Shader &shader);
+	void render(sf::RenderWindow &window);
 };
 
 #endif

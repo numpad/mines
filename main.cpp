@@ -34,7 +34,7 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 				break;
 			case sf::Event::Resized:
 				screenSize.x = event.size.width;
-				screenSize.x = event.size.height;
+				screenSize.y = event.size.height;
 				break;
 			default:
 				break;
@@ -45,6 +45,7 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 		window.close();
 }
 
+#include <iostream>
 int main(int argc, char *argv[]) {
 	Vec2 screenSize = Vec2(800, 740); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
@@ -56,28 +57,20 @@ int main(int argc, char *argv[]) {
 
 	/* World generation */
 	Grid grid(screenSize, 150, 50, "assets/tileset.png");
+	
 	grid.generate();
-
-	/* Fragment Shader */
-	sf::Shader backgroundShader;
-	if (!backgroundShader.loadFromFile("assets/shaders/background.frag", sf::Shader::Fragment)) {
-		puts("failed to load shader #2!");
-	}
-	backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
 
 	/* Player */
 	Player player(screenSize);
-	player.setPos(Vec2(400.0, 400.0));
-
+	player.setPos(Vec2(400, 400));
 	/* Items */
 	std::vector<Item> items = std::vector<Item>();
+	
+	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
 
-	BitmapFont font("assets/font/font.png", Vec2(5, 8), 1);
-
-	BitmapText healthText(font);
+	BitmapText healthText(defaultfont);
 	healthText.setColor(sf::Color::Green);
 	healthText.write(L"numpad");
-	
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -165,7 +158,7 @@ int main(int argc, char *argv[]) {
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
-		
+
 		for (size_t i = 0; i < items.size(); ++i) {
 			Item &item = items.at(i);
 			item.update(grid);
@@ -179,8 +172,7 @@ int main(int argc, char *argv[]) {
 		/* Rendering: */
 		daycycle.render(window, grid);
 
-		grid.render(window, backgroundShader);
-		
+		grid.render(window);
 		player.render(window, grid.offset);
 		
 		for (size_t i = 0; i < items.size(); ++i) {
@@ -196,6 +188,9 @@ int main(int argc, char *argv[]) {
 		
 		healthText.drawTo(window, player.pos + grid.offset - Vec2(healthText.getSize().x / 2.0, 50));
 		
+		if (daycycle.is_night()) {
+			defaultfont.write(window, Vec2(10, 10), L"Nighttime");
+		}
 		
 		window.display();
 	}

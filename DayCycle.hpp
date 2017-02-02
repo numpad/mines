@@ -18,6 +18,8 @@ public:
 	float get_darkness();
 	unsigned int get_day();
 
+	bool is_night();
+
 	void update();
 	void render(sf::RenderWindow& window, Grid &grid);
 };
