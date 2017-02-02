@@ -18,6 +18,9 @@ public:
 
 	BitmapFont(const char *, Vec2, float scale = 1.0, Vec2 spacing = Vec2(1.0, 2.0));
 
+	void setLayout(std::vector<std::wstring>);
+	void setDefaultLayout();
+
 	Vec2 getDimensions(std::wstring);
 	Vec2 getSpacing();
 	sf::IntRect getLetterSize();

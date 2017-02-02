@@ -10,11 +10,23 @@ BitmapFont::BitmapFont(const char *path, Vec2 charSize, float scale, Vec2 spacin
 	BitmapFont::scale = scale;
 
 	BitmapFont::letterLayout = std::vector<std::wstring>();
-	BitmapFont::letterLayout.push_back(L"abcdefghijklmnopqrstuvwxyz");
-	BitmapFont::letterLayout.push_back(L"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-	BitmapFont::letterLayout.push_back(L"0123456789+-*/!\"$%&()=?.:,");
-	BitmapFont::letterLayout.push_back(L";[]{}'^<>|_#~€@äöüÄÖÜß\\°  ");
-	
+
+	BitmapFont::setDefaultLayout();
+}
+
+void BitmapFont::setLayout(std::vector<std::wstring> layout) {
+	BitmapFont::letterLayout = layout;
+}
+
+void BitmapFont::setDefaultLayout() {
+	std::vector<std::wstring> layout = std::vector<std::wstring>();
+
+	layout.push_back(L"abcdefghijklmnopqrstuvwxyz");
+	layout.push_back(L"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	layout.push_back(L"0123456789+-*/!\"$%&()=?.:,");
+	layout.push_back(L";[]{}'^<>|_#~€@äöüÄÖÜß\\°  ");
+
+	BitmapFont::setLayout(layout);
 }
 
 sf::IntRect BitmapFont::getCharRect(const wchar_t c) {
@@ -41,9 +53,26 @@ sf::IntRect BitmapFont::getCharRect(const wchar_t c) {
 Vec2 BitmapFont::getDimensions(std::wstring text) {
 	if (text.empty())
 		return Vec2(0, BitmapFont::letterRect.height * BitmapFont::scale);
+	
+	/* Calculate the longest line */
+	size_t longestLine = 0, currentLine = 0, linesCount = 0;
+	for (size_t i = 0; i < text.size(); ++i) {
+		if (text.at(i) == L'\n' || i == text.size() - 1) {
+			++linesCount;
+
+			if (currentLine > longestLine)
+				longestLine = currentLine;
+			
+			currentLine = 0;
+			continue;
+		} else {
+			++currentLine;
+		}
+	}
+	
 	return Vec2(
-		(float)text.size() * (BitmapFont::letterRect.width * BitmapFont::scale) + (float)(text.size() - 1) * (BitmapFont::letterSpacing.x * BitmapFont::scale),
-		BitmapFont::letterRect.height * BitmapFont::scale
+		(float)longestLine * (BitmapFont::letterRect.width * BitmapFont::scale) + (float)(longestLine) * (BitmapFont::letterSpacing.x * BitmapFont::scale),
+		(float)linesCount * (BitmapFont::letterRect.height * BitmapFont::scale) + (float)(linesCount) * (BitmapFont::letterSpacing.y * BitmapFont::scale)
 	);
 }
 

@@ -12,9 +12,25 @@ void BitmapText::write(std::wstring text) {
 		return;
 	}
 
+	/* Write text to a texture */
 	BitmapText::renderText.clear(BitmapText::backgroundColor);
+
+	size_t line_x = 0,
+	       line_y = 0;
 	for (size_t i = 0; i < text.size(); ++i) {
-		BitmapText::font.writeLetter(BitmapText::renderText, Vec2((float)i * BitmapText::font.getLetterSize().width + (float)i * BitmapText::font.getSpacing().x, 0), text.at(i));
+		if (text.at(i) == L'\n') {
+			line_x = 0;
+			++line_y;
+			continue;
+		}
+		BitmapText::font.writeLetter(BitmapText::renderText,
+		                             Vec2(
+											(float)line_x * BitmapText::font.getLetterSize().width + (float)line_x * BitmapText::font.getSpacing().x,
+											(float)line_y * BitmapText::font.getLetterSize().height + (float)line_y * BitmapText::font.getSpacing().y
+										 ),
+									 text.at(i));
+		
+		++line_x;
 	}
 	BitmapText::renderText.display();
 

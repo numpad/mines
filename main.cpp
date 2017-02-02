@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 	BitmapFont font("assets/font/font.png", Vec2(5, 8), 2);
 
 	BitmapText healthText(font);
-	healthText.write(L"Mines! now supports Text!");
+	healthText.write(L"Multiline text!\n---------------\n\n * Easy to implement\n * Great results!");
 
 	sf::Clock clock;
 	while (window.isOpen()) {
