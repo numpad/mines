@@ -4,6 +4,7 @@
 #include "Vec2.hpp"
 #include "Block.hpp"
 #include "Grid.hpp"
+#include "Player.hpp"
 #include <SFML/Graphics.hpp>
 
 class Item {
@@ -14,10 +15,17 @@ class Item {
 	sf::Sprite sprite;
 	sf::Clock timeAlive;
 
+	constexpr static float COLLECTABLE_AFTER_SECONDS = 1.0;
+
 public:
 	Vec2 pos;
 
 	Item(Vec2, blockid, Vec2 vel = Vec2(0, 0));
+
+	float secondsAlive();
+	bool collectableBy(Player &, float radius = 32.0);
+
+	blockid getType();
 
 	void update(Grid &);
 	void render(sf::RenderWindow &, Vec2 offset = Vec2(0, 0));

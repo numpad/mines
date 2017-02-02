@@ -11,6 +11,21 @@ Item::Item(Vec2 pos, blockid type, Vec2 vel) {
 	Item::sprite.setScale(0.7, 0.7);
 }
 
+float Item::secondsAlive() {
+	return Item::timeAlive.getElapsedTime().asSeconds();
+}
+
+bool Item::collectableBy(Player &player, float radius) {
+	if (Item::secondsAlive() < Item::COLLECTABLE_AFTER_SECONDS)
+		return false;
+	
+	return (Item::pos - player.pos).length() < radius;
+}
+
+blockid Item::getType() {
+	return Item::type;
+}
+
 void Item::update(Grid &grid) {
 	float x_friction = 0.01;
 
@@ -35,12 +50,14 @@ void Item::update(Grid &grid) {
 }
 
 void Item::render(sf::RenderWindow &window, Vec2 offset) {
-	const float secondsAlive = Item::timeAlive.getElapsedTime().asSeconds();
 
 	Vec2 finalPos = Item::pos + offset;
+	/*
+	const float secondsAlive = Item::timeAlive.getElapsedTime().asSeconds();
 	if (fabs(Item::vel.x) < 0.05 && fabs(Item::vel.y) < 0.05) {
-		//finalPos += Vec2(0, fabs(cos(secondsAlive * 1.5)) * -2.0 + fabs(sin(secondsAlive * 4.5)) * -6.0);
+		finalPos += Vec2(0, fabs(cos(secondsAlive * 1.5)) * -2.0 + fabs(sin(secondsAlive * 4.5)) * -6.0);
 	}
+	*/
 
 	Item::sprite.rotate(Item::deltaAngle);
 	Item::sprite.setPosition(finalPos.x, finalPos.y);

@@ -20,11 +20,26 @@
 #include "Item.hpp"
 #include "Random.hpp"
 
-void handle_events(sf::RenderWindow& window) {
+void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 	sf::Event event;
 	while (window.pollEvent(event)) {
-		if (event.type == sf::Event::Closed)
-			window.close();
+		switch (event.type) {
+			case sf::Event::Closed:
+				window.close();
+				break;
+			case sf::Event::KeyPressed:
+
+				break;
+			case sf::Event::JoystickConnected:
+				puts("button pressed!");
+				break;
+			case sf::Event::Resized:
+				screenSize.x = event.size.width;
+				screenSize.x = event.size.height;
+				break;
+			default:
+				break;
+		};
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -32,12 +47,12 @@ void handle_events(sf::RenderWindow& window) {
 }
 
 int main(int argc, char *argv[]) {
-	Vec2 screenSize = Vec2(1920, 1080); // 800 x 740
-	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close | sf::Style::Fullscreen);
+	Vec2 screenSize = Vec2(800, 740); // 800 x 740
+	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
 	/* Day/Night cycle */
-	DayCycle daycycle(1000, RGB(61, 159, 203));
+	DayCycle daycycle(5000, RGB(61, 159, 203));
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */
@@ -58,7 +73,7 @@ int main(int argc, char *argv[]) {
 
 	sf::Clock clock;
 	while (window.isOpen()) {
-		handle_events(window);
+		handle_events(window, screenSize);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 		//float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
@@ -103,8 +118,8 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-			Random throwVelx(-0.85, 0.85);
-			Random throwVely(3.5, 9.5);
+			Random throwVelx(2.5, 3.45);
+			Random throwVely(1.5, 4.5);
 			blockid thrownItem = player.takeItem();
 			if (thrownItem != BLOCK_AIR)
 				items.push_back(Item(player.pos, thrownItem, Vec2(throwVelx(), -throwVely())));
@@ -131,7 +146,13 @@ int main(int argc, char *argv[]) {
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
 		
 		for (size_t i = 0; i < items.size(); ++i) {
-			items.at(i).update(grid);
+			Item &item = items.at(i);
+			item.update(grid);
+
+			if (item.collectableBy(player)) {
+				player.collectItems(item.getType());
+				items.erase(items.begin() + i);
+			}
 		}
 
 		/* Rendering: */
