@@ -19,6 +19,8 @@
 #include "LightSystem.hpp"
 #include "Item.hpp"
 #include "Random.hpp"
+#include "BitmapFont.hpp"
+#include "BitmapText.hpp"
 
 void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 	sf::Event event;
@@ -29,9 +31,6 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 				break;
 			case sf::Event::KeyPressed:
 
-				break;
-			case sf::Event::JoystickConnected:
-				puts("button pressed!");
 				break;
 			case sf::Event::Resized:
 				screenSize.x = event.size.width;
@@ -66,10 +65,17 @@ int main(int argc, char *argv[]) {
 	}
 	backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
 
+	/* Player */
 	Player player(screenSize);
 	player.setPos(Vec2(400.0, 400.0));
 
+	/* Items */
 	std::vector<Item> items = std::vector<Item>();
+
+	BitmapFont font("assets/font/font.png", Vec2(5, 8), 2);
+
+	BitmapText healthText(font);
+	healthText.write(";[]{}'^<>|_#~€@äöüÄÖÜß\\°  ");
 
 	sf::Clock clock;
 	while (window.isOpen()) {
@@ -169,9 +175,12 @@ int main(int argc, char *argv[]) {
 		lightsystem.setLight(0, sf::Glsl::Vec3(0.5, 0.5, 2.0));
 		lightsystem.setGlobalLight(1.0 - daycycle.get_darkness());
 		lightsystem.render(window);
-		
+
 		/* GUI */
 		player.renderInventory(window);
+		
+		healthText.drawTo(window, screenSize / 4.0);
+
 		window.display();
 	}
 
