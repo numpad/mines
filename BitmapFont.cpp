@@ -17,7 +17,7 @@ BitmapFont::BitmapFont(const char *path, Vec2 charSize, float scale, Vec2 spacin
 	
 }
 
-sf::IntRect BitmapFont::getCharRect(const char c) {
+sf::IntRect BitmapFont::getCharRect(const wchar_t c) {
 	for (size_t y = 0; y < BitmapFont::letterLayout.size(); ++y) {
 		for (size_t x = 0; x < BitmapFont::letterLayout.at(y).size(); ++x) {
 			if (c == BitmapFont::letterLayout.at(y).at(x)) {
@@ -38,7 +38,7 @@ sf::IntRect BitmapFont::getCharRect(const char c) {
 	);
 }
 
-Vec2 BitmapFont::getDimensions(std::string text) {
+Vec2 BitmapFont::getDimensions(std::wstring text) {
 	if (text.empty())
 		return Vec2(0, BitmapFont::letterRect.height * BitmapFont::scale);
 	return Vec2(
@@ -58,7 +58,11 @@ sf::IntRect BitmapFont::getLetterSize() {
 	);
 }
 
-void BitmapFont::writeLetter(sf::RenderTexture &rtex, Vec2 pos, const char c) {
+void BitmapFont::writeLetter(sf::RenderTexture &rtex, Vec2 pos, const wchar_t c) {
+	/* do not draw space */
+	if (c == ' ')
+		return;
+	
 	const sf::IntRect charRect = BitmapFont::getCharRect(c);
 	sf::Sprite charSprite(BitmapFont::bitmap, charRect);
 	charSprite.setScale(BitmapFont::scale, BitmapFont::scale);

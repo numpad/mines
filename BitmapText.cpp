@@ -4,7 +4,7 @@ BitmapText::BitmapText(BitmapFont &refFont) : font{refFont} {
 	BitmapText::backgroundColor = sf::Color::Transparent;
 }
 
-void BitmapText::write(std::string text) {
+void BitmapText::write(std::wstring text) {
 	Vec2 textSize = BitmapText::font.getDimensions(text);
 
 	if (!BitmapText::renderText.create(textSize.x, textSize.y)) {

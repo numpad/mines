@@ -17,7 +17,7 @@ public:
 
 	BitmapText(BitmapFont &);
 
-	void write(std::string);
+	void write(std::wstring);
 
 	void drawTo(sf::RenderWindow &, Vec2);
 };

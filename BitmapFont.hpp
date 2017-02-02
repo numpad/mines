@@ -18,12 +18,12 @@ public:
 
 	BitmapFont(const char *, Vec2, float scale = 1.0, Vec2 spacing = Vec2(1.0, 2.0));
 
-	Vec2 getDimensions(std::string);
+	Vec2 getDimensions(std::wstring);
 	Vec2 getSpacing();
 	sf::IntRect getLetterSize();
 
-	sf::IntRect getCharRect(const char);
-	void writeLetter(sf::RenderTexture &, Vec2, const char);
+	sf::IntRect getCharRect(const wchar_t);
+	void writeLetter(sf::RenderTexture &, Vec2, const wchar_t);
 };
 
 #endif

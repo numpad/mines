@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 	BitmapFont font("assets/font/font.png", Vec2(5, 8), 2);
 
 	BitmapText healthText(font);
-	healthText.write(";[]{}'^<>|_#~€@äöüÄÖÜß\\°  ");
+	healthText.write(L"Mines! now supports Text!");
 
 	sf::Clock clock;
 	while (window.isOpen()) {
