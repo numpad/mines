@@ -25,7 +25,7 @@ public:
 	void setCollectTimeout(float seconds);
 
 	float secondsAlive();
-	bool collectableBy(Player &, float radius = 32.0);
+	bool collectableBy(Player &, float radius = 64.0);
 
 	blockid getType();
 

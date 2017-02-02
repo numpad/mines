@@ -9,6 +9,8 @@ Item::Item(Vec2 pos, blockid type, Vec2 vel) {
 	Item::sprite.setTextureRect(Block::getBlockSubRect(Item::type));
 	Item::sprite.setOrigin(16, 16);
 	Item::sprite.setScale(0.7, 0.7);
+
+	Item::setCollectTimeout(1.0);
 }
 
 void Item::setCollectTimeout(float seconds) {
