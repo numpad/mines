@@ -52,7 +52,8 @@ int main(int argc, char *argv[]) {
 	window.setVerticalSyncEnabled(true);
 
 	/* Day/Night cycle */
-	DayCycle daycycle(5000, RGB(61, 159, 203));
+	DayCycle daycycle(1000, RGB(61, 159, 203));
+	daycycle.generateNightsky(screenSize);
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */

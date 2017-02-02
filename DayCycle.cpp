@@ -38,10 +38,84 @@ void DayCycle::update() {
 		DayCycle::days++;
 		DayCycle::sunrise = true;
 	}
+
+	/* Update night sky */
+	DayCycle::nightSkySprite.rotate(0.0035);
+	if (DayCycle::sunrise) {
+		if (DayCycle::nightSkyAlpha > 0.0 && !DayCycle::is_night()) {
+			DayCycle::nightSkyAlpha *= 0.995;
+		}
+	} else {
+		if (DayCycle::is_night()) {
+			if (DayCycle::nightSkyAlpha < 255) {
+				DayCycle::nightSkyAlpha += 0.75;
+			} else if (DayCycle::nightSkyAlpha > 255) {
+				DayCycle::nightSkyAlpha = 255;
+			}
+		}
+	}
 }
 
 void DayCycle::render(sf::RenderWindow& window, Grid &grid) {
 	DayCycle::update();
 	window.clear(DayCycle::get_color());
 
+	if (DayCycle::nightSkyAlpha > 0.0) {
+		DayCycle::nightSkySprite.setColor(sf::Color(255, 255, 255, DayCycle::nightSkyAlpha));
+		window.draw(DayCycle::nightSkySprite);
+	}
+}
+
+void DayCycle::generateNightsky(Vec2 screenSize) {
+	/* Skip if nightSky was already generated for this day */
+	if (DayCycle::nightSkyId == DayCycle::days)
+		return;
+	
+	DayCycle::nightSkyId = DayCycle::days;
+	
+	if (!DayCycle::nightSky.create(screenSize.x + 700, screenSize.x + 700)) {
+		puts("[DayCycle] failed creating nightsky texture");
+		return;
+	}
+
+	sf::RectangleShape star;
+
+	float y = 0;
+	Random randomStep(10, 70);
+	Random randomOffset(-20, 20);
+	Random randomStarColor(240, 255);
+	Random randomStarAlpha(100, 255);
+	Random randomSize(1.25, 3.5);
+	Random randomAngle(0.0, 359.0);
+
+	DayCycle::nightSky.clear(sf::Color::Transparent);
+	while (y < DayCycle::nightSky.getSize().y) {
+		y += randomStep();
+		float x = 0;
+		while (x < DayCycle::nightSky.getSize().x) {
+			x += randomStep();
+
+			const int color = randomStarColor();
+			const float size = randomSize();
+			const float angle = randomAngle();
+
+			star.setFillColor(sf::Color(color, color, color, randomStarAlpha()));
+			star.setSize(sf::Vector2f(size, size));
+			star.setOrigin(size / 2.0, size / 2.0);
+			star.setPosition(x + randomOffset(), y + randomOffset());
+			star.setRotation(angle);
+
+			DayCycle::nightSky.draw(star);
+		}
+	}
+
+	/* Update sprite */
+	DayCycle::nightSky.setSmooth(true);
+	DayCycle::nightSkySprite.setTexture(DayCycle::nightSky.getTexture());
+	//DayCycle::nightSkySprite.setTextureRect(sf::IntRect(0, 0, screenSize.x, screenSize.y));
+	DayCycle::nightSkySprite.setOrigin(DayCycle::nightSky.getSize().x / 2, DayCycle::nightSky.getSize().y / 2);
+	DayCycle::nightSkySprite.setPosition(screenSize.x / 2.0, screenSize.y);
+	DayCycle::nightSkySprite.setRotation(0.0);
+
+	DayCycle::nightSkyAlpha = 255;
 }

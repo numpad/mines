@@ -10,6 +10,13 @@ class DayCycle {
 	bool sunrise;
 	unsigned int days;
 	RGB color;
+
+	/* Nightsky */
+	unsigned int nightSkyId;
+	float nightSkyAlpha;
+	
+	sf::RenderTexture nightSky;
+	sf::Sprite nightSkySprite;
 public:
 
 	DayCycle(unsigned int daylength, RGB color);
@@ -22,6 +29,8 @@ public:
 
 	void update();
 	void render(sf::RenderWindow& window, Grid &grid);
+
+	void generateNightsky(Vec2);
 };
 
 #endif
