@@ -21,6 +21,7 @@
 #include "Random.hpp"
 #include "BitmapFont.hpp"
 #include "BitmapText.hpp"
+#include "Clouds.hpp"
 
 void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed) {
 	for (size_t i = 0; i < sf::Keyboard::KeyCount; ++i)
@@ -67,19 +68,23 @@ int main(int argc, char *argv[]) {
 	/* Player */
 	Player player(screenSize);
 	player.setPos(Vec2(400, 400));
+
 	/* Items */
 	std::vector<Item> items = std::vector<Item>();
 	
-	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
+	/* Weather */
+	Clouds clouds(screenSize);
 
+	/* Text */
+	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
 	BitmapText healthText(defaultfont);
 	healthText.setColor(sf::Color::Green);
 	healthText.write(L"numpad");
 
-	bool keyPressed[sf::Keyboard::KeyCount] = {false};
+	bool isKeyClicked[sf::Keyboard::KeyCount] = {false};
 	sf::Clock clock;
 	while (window.isOpen()) {
-		handle_events(window, screenSize, keyPressed);
+		handle_events(window, screenSize, isKeyClicked);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 		//float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
@@ -137,7 +142,7 @@ int main(int argc, char *argv[]) {
 			player.setPlaceMode(Player::PLACE_FOREGROUND);
 		}
 
-		if (keyPressed[sf::Keyboard::Q]) {
+		if (isKeyClicked[sf::Keyboard::Q]) {
 			Random throwVelx(2.5, 3.45);
 			Random throwVely(1.5, 4.5);
 			blockid thrownItem = player.takeItem();
@@ -161,6 +166,8 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		clouds.update(grid);
+
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
@@ -177,7 +184,8 @@ int main(int argc, char *argv[]) {
 
 		/* Rendering: */
 		daycycle.render(window, grid);
-
+		clouds.render(window);
+		
 		grid.render(window);
 		player.render(window, grid.offset);
 		
