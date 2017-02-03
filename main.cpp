@@ -22,7 +22,10 @@
 #include "BitmapFont.hpp"
 #include "BitmapText.hpp"
 
-void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
+void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed) {
+	for (size_t i = 0; i < sf::Keyboard::KeyCount; ++i)
+		keypressed[i] = false;
+	
 	sf::Event event;
 	while (window.pollEvent(event)) {
 		switch (event.type) {
@@ -30,7 +33,7 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 				window.close();
 				break;
 			case sf::Event::KeyPressed:
-
+				keypressed[event.key.code] = true;
 				break;
 			case sf::Event::Resized:
 				screenSize.x = event.size.width;
@@ -73,9 +76,10 @@ int main(int argc, char *argv[]) {
 	healthText.setColor(sf::Color::Green);
 	healthText.write(L"numpad");
 
+	bool keyPressed[sf::Keyboard::KeyCount] = {false};
 	sf::Clock clock;
 	while (window.isOpen()) {
-		handle_events(window, screenSize);
+		handle_events(window, screenSize, keyPressed);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 		//float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
@@ -94,7 +98,8 @@ int main(int argc, char *argv[]) {
 			Block& current = grid.at(bx, by, player.getPlaceMode());
 
 			if (current.id >= 0) {
-				current.damage += 1;
+				current.applyDamage();
+
 				if (current.damage > current.maxDamage()) {
 					/* Jump in random direction */
 					Random velx(-2.0, 2.0);
@@ -132,7 +137,7 @@ int main(int argc, char *argv[]) {
 			player.setPlaceMode(Player::PLACE_FOREGROUND);
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+		if (keyPressed[sf::Keyboard::Q]) {
 			Random throwVelx(2.5, 3.45);
 			Random throwVely(1.5, 4.5);
 			blockid thrownItem = player.takeItem();

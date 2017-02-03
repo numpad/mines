@@ -115,7 +115,7 @@ public:
 	sf::Sprite sprite;
 
 	blockid id;
-	int damage;
+	int damage, last_damage;
 
 	float friction;
 
@@ -125,13 +125,14 @@ public:
 	void updateId(int newid);
 	
 	bool collides();
-	void render(sf::RenderTexture& window, int x, int y, float xoff, float yoff);
-	void render(sf::RenderWindow& window, Vec2 pos, Vec2 offset = Vec2(0, 0));
+	void render(sf::RenderTarget& window, float x, float y, float xoff, float yoff);
+	void render(sf::RenderTarget& window, Vec2 pos, Vec2 offset = Vec2(0, 0));
 	int maxDamage();
 
 	static void setGlobalTileset(sf::Texture& texture);
 	static sf::IntRect getBlockSubRect(blockid b_id);
 
+	void applyDamage();
 	void setTint(RGB nt);
 	RGB& getTint();
 };

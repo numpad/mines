@@ -114,7 +114,7 @@ Block &Grid::at(int idx, bool foreground) {
 	return background_blocks.at(idx);
 }
 
-Block& Grid::at(int x, int y, bool foreground) {
+Block &Grid::at(int x, int y, bool foreground) {
 	if (x < 0 || y < 0 || x >= Grid::width || y >= Grid::height)
 		return at(0, foreground);
 	
@@ -209,7 +209,7 @@ void Grid::render(int xs, int ys, int width, int height) {
 			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
 				continue;
 			
-			Grid::at(x, y, false).render(Grid::background_framebuffer, x, y, offset.x, offset.y);
+			Grid::at(x, y, false).render(Grid::background_framebuffer, x * 32.0, y * 32.0, offset.x, offset.y);
 		}
 	}
 
@@ -218,7 +218,7 @@ void Grid::render(int xs, int ys, int width, int height) {
 			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
 				continue;
 			
-			Grid::at(x, y).render(Grid::framebuffer, x, y, offset.x, offset.y);
+			Grid::at(x, y).render(Grid::framebuffer, x * 32.0, y * 32.0, offset.x, offset.y);
 		}
 	}
 }

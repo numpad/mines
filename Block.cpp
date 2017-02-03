@@ -17,6 +17,7 @@ Block::Block(int block_id) : tint(255, 255, 255) {
 
 	/* Load damage */
 	Block::damage = 0;
+	Block::last_damage = 0;
 	Block::damage_max = block_max_damages[id];
 	if (Block::damage_max == 0)
 		Block::damage_max = 50;
@@ -26,6 +27,7 @@ Block::Block(int block_id) : tint(255, 255, 255) {
 
 	Block::sprite.setTexture(*Block::tileset);
 	Block::sprite.setTextureRect(sf::IntRect((Block::id % 10) * 32, (Block::id / 10) * 32, 32, 32));
+
 }
 
 void Block::updateId(int newid) {
@@ -43,13 +45,13 @@ int Block::maxDamage() {
 	return block_max_damages[Block::id];
 }
 
-void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yoff) {
+void Block::render(sf::RenderTarget& window, float x, float y, float xoff, float yoff) {
 	if (Block::id < 0)
 		return;
 	
 	Block::sprite.setColor(Block::tint.toColor());
 	
-	Block::sprite.setPosition((int)(xoff + (float)x * 32.0), (int)(yoff + (float)y * 32.0));
+	Block::sprite.setPosition((int)(xoff + (float)x), (int)(yoff + (float)y));
 	window.draw(Block::sprite);
 
 	float damage_percent = (float)Block::damage / (float)Block::damage_max;
@@ -77,15 +79,8 @@ void Block::render(sf::RenderTexture& window, int x, int y, float xoff, float yo
 }
 
 
-void Block::render(sf::RenderWindow& window, Vec2 pos, Vec2 offset) {
-	if (Block::id < 0)
-		return;
-	
-	Block::sprite.setColor(Block::tint.toColor());
-	
-	Block::sprite.setPosition(pos.x + offset.x, pos.y + offset.y);
-	window.draw(Block::sprite);
-	Block::sprite.setColor(sf::Color::White);
+void Block::render(sf::RenderTarget& window, Vec2 pos, Vec2 offset) {
+	Block::render(window, pos.x, pos.y, offset.x, offset.y);
 }
 
 void Block::setTint(RGB tint) {
@@ -94,4 +89,8 @@ void Block::setTint(RGB tint) {
 
 RGB& Block::getTint() {
 	return Block::tint;
+}
+
+void Block::applyDamage() {
+	Block::damage++;
 }
