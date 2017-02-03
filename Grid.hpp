@@ -25,13 +25,13 @@ public:
 	std::vector<Block> blocks;
 	std::vector<Block> background_blocks;
 
-	Grid(sf::RenderTexture&, const char *filename, const char *tileset);
 	Grid(Vec2 screenSize, int width, int height, const char *tileset);
 	~Grid();
 
 	void moveCamera(float x, float y);
 	void setCamera(float x, float y);
 
+	bool load(Vec2 screenSize, const char *filename);
 	void save(const char *filename);
 
 	void generate();

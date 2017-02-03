@@ -1,48 +1,33 @@
 #include "Grid.hpp"
 
-/*
-Grid::Grid(sf::RenderTexture& window, const char *filename, const char *tileset) {
-	Grid::offset = Vec2(0.0f, 0.0f);
-	Grid::blocksize = 32;
-	Grid::blocks = std::vector<Block>();
-	Grid::background_blocks = std::vector<Block>();
-	Grid::window = &window;
-
-	if (!Grid::tileset.loadFromFile(tileset)) {
-		puts("failed to load tileset!");
-		Grid::tileset.create(320, 320);
-	}
-
-	Grid::tileset.setSmooth(false);
-	Block::setGlobalTileset(Grid::tileset);
-	
-
+bool Grid::load(Vec2 screenSize, const char *filename) {
 	FILE *fp = fopen(filename, "r+");
 	if (!fp) {
-		printf("could not load from \"%s\"!\n", filename);
-		return;
+		return false;
 	}
 	
 	int loaded_dimensions[2] = {0};
 	fread(loaded_dimensions, sizeof(int), 2, fp);
-	Grid::width = loaded_dimensions[0];
-	Grid::height = loaded_dimensions[1];
+	//Grid::width = loaded_dimensions[0];
+	//Grid::height = loaded_dimensions[1];
 	
 	const int loadedblocks_count = loaded_dimensions[0] * loaded_dimensions[1];
 
-	int *loadedblocks = (int*)malloc(loadedblocks_count * sizeof(int));
-	fread(loadedblocks, sizeof(int), loadedblocks_count, fp);
+	int *loadedblocks = (int*)malloc(loadedblocks_count * 2 * sizeof(int));
+	fread(loadedblocks, sizeof(int), loadedblocks_count * 2, fp);
 
 	fclose(fp);
 
-	for (int i = 0; i < loadedblocks_count; ++i) {
-		Grid::blocks.push_back(Block(loadedblocks[i]));
-		Grid::background_blocks.push_back(Block(loadedblocks[i]));
+	for (int i = 0; i < loadedblocks_count; i += 1) {
+		Grid::blocks.at(i)  = Block(loadedblocks[i * 2]);
+		Grid::background_blocks.at(i) = Block(loadedblocks[i * 2 + 1]);
 	}
 
 	free(loadedblocks);
+
+	return true;
 }
-*/
+
 
 Grid::Grid(Vec2 screenSize, int w, int h, const char *tileset) {
 	Grid::width = w;
@@ -100,6 +85,8 @@ void Grid::save(const char *filename) {
 
 	for (size_t i = 0; i < Grid::blocks.size(); ++i) {
 		fwrite(&(Grid::at(i).id), sizeof(int), 1, fp);
+		fwrite(&(Grid::at(i, false).id), sizeof(int), 1, fp);
+		
 	}
 
 	fclose(fp);
