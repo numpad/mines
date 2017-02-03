@@ -57,7 +57,7 @@ void Block::render(sf::RenderTarget& window, float x, float y, float xoff, float
 	float damage_percent = (float)Block::damage / (float)Block::damage_max;
 	if (damage_percent >= 1.0)
 		damage_percent = 0.99;
-	
+
 	if (damage_percent > 0) {
 		int damage_id = 9 * 10 + damage_percent * 10;
 		sf::IntRect subrect = Block::sprite.getTextureRect();
@@ -73,6 +73,14 @@ void Block::render(sf::RenderTarget& window, float x, float y, float xoff, float
 		subrect.left = srx;
 		subrect.top = sry;
 		Block::sprite.setTextureRect(subrect);
+		
+		/* If damage didn't change for two frames, reset damage */
+		if (Block::damage == Block::last_damage) {
+			Block::damage = 0;
+			Block::last_damage = 0;
+		} else {
+			Block::last_damage++;
+		}
 	}
 
 	Block::sprite.setColor(sf::Color::White);
