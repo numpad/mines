@@ -119,3 +119,43 @@ void DayCycle::generateNightsky(Vec2 screenSize) {
 
 	DayCycle::nightSkyAlpha = 255;
 }
+
+void DayCycle::save(const char *fn) {
+	FILE *fp = fopen(fn, "w+");
+	if (!fp) {
+		printf("[DayCycle] Could not save to \"%s\"!\n", fn);
+		return;
+	}
+
+	fwrite(&(DayCycle::daytime), sizeof(unsigned int), 1, fp);
+	fwrite(&(DayCycle::daylength), sizeof(unsigned int), 1, fp);
+	fwrite(&(DayCycle::sunrise), sizeof(bool), 1, fp);
+	fwrite(&(DayCycle::days), sizeof(unsigned int), 1, fp);
+	fwrite(&(DayCycle::color.r), sizeof(unsigned char), 1, fp);
+	fwrite(&(DayCycle::color.g), sizeof(unsigned char), 1, fp);
+	fwrite(&(DayCycle::color.b), sizeof(unsigned char), 1, fp);
+	fwrite(&(DayCycle::nightSkyAlpha), sizeof(float), 1, fp);
+	
+	
+
+	fclose(fp);
+}
+
+bool DayCycle::load(const char *fn) {
+	FILE *fp = fopen(fn, "r");
+	if (!fp) {
+		return false;
+	}
+
+	fread(&(DayCycle::daytime), sizeof(unsigned int), 1, fp);
+	fread(&(DayCycle::daylength), sizeof(unsigned int), 1, fp);
+	fread(&(DayCycle::sunrise), sizeof(bool), 1, fp);
+	fread(&(DayCycle::days), sizeof(unsigned int), 1, fp);
+	fread(&(DayCycle::color.r), sizeof(unsigned char), 1, fp);
+	fread(&(DayCycle::color.g), sizeof(unsigned char), 1, fp);
+	fread(&(DayCycle::color.b), sizeof(unsigned char), 1, fp);
+	fread(&(DayCycle::nightSkyAlpha), sizeof(float), 1, fp);
+
+	fclose(fp);
+	return true;
+}

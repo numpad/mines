@@ -1,6 +1,6 @@
 #include "Grid.hpp"
 
-bool Grid::load(Vec2 screenSize, const char *filename) {
+bool Grid::load(const char *filename) {
 	FILE *fp = fopen(filename, "r+");
 	if (!fp) {
 		return false;

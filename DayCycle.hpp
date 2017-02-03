@@ -4,6 +4,8 @@
 #include "rgb.hpp"
 #include "Grid.hpp"
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
+#include <stdlib.h>
 
 class DayCycle {
 	unsigned int daytime, daylength;
@@ -31,6 +33,10 @@ public:
 	void render(sf::RenderWindow& window, Grid &grid);
 
 	void generateNightsky(Vec2);
+
+	void save(const char *);
+	bool load(const char *);
+
 };
 
 #endif

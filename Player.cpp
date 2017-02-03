@@ -153,3 +153,49 @@ void Player::setPlaceMode(Player::PlaceMode pm) {
 bool Player::getPlaceMode() {
 	return static_cast<bool>(Player::placeMode);
 }
+
+bool Player::load(const char *fn) {
+	FILE *fp = fopen(fn, "r");
+	if (!fp) {
+		return false;
+	}
+
+	float loaded_position[2];
+	fread(loaded_position, sizeof(float), 2, fp);
+
+	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
+		size_t blockCount;
+		blockid blockId;
+
+		fread(&blockCount, sizeof(size_t), 1, fp);
+		fread(&blockId, sizeof(blockid), 1, fp);
+
+		Player::collectItems(blockId, blockCount);
+	}
+
+	Player::setPos(Vec2(loaded_position[0], loaded_position[1]));
+
+	fclose(fp);
+	return true;
+}
+
+void Player::save(const char *fn) {
+	FILE *fp = fopen(fn, "w+");
+	if (!fp) {
+		printf("Cannot save to \"%s\"!\n", fn);
+		return;
+	}
+	
+	fwrite(&(Player::pos.x), sizeof(float), 1, fp);
+	fwrite(&(Player::pos.y), sizeof(float), 1, fp);
+	
+	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
+		fwrite(&(Player::inventory.at(i).count), sizeof(size_t), 1, fp);
+		const int blockId = Player::inventory.at(i).get();
+
+		fwrite(&(blockId), sizeof(blockid), 1, fp);
+		
+	}
+
+	fclose(fp);
+}

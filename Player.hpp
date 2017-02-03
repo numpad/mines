@@ -10,6 +10,8 @@
 #include "BitmapText.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 
 class Player : public Entity {
 public:
@@ -40,6 +42,9 @@ public:
 
 	void setPlaceMode(PlaceMode);
 	bool getPlaceMode();
+
+	bool load(const char *);
+	void save(const char *);
 private:
 	std::vector<size_t> limb_z_index;
 	

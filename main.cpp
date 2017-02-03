@@ -57,17 +57,23 @@ int main(int argc, char *argv[]) {
 	/* Day/Night cycle */
 	DayCycle daycycle(1000, RGB(61, 159, 203));
 	daycycle.generateNightsky(screenSize);
+	if (!daycycle.load("saves/world0/daycycle.sav")) {
+		puts("DayCycle not loaded!");
+	}
+
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
 	/* World generation */
 	Grid grid(screenSize, 150, 50, "assets/tileset.png");
-	if (!grid.load(screenSize, "saves/world0/world.sav")) {
+	if (!grid.load("saves/world0/world.sav")) {
 		grid.generate();
 	}
 
 	/* Player */
 	Player player(screenSize);
-	player.setPos(Vec2(400, 400));
+	if (!player.load("saves/world0/player.sav")) {
+		player.setPos(Vec2(400, 400));
+	}
 
 	/* Items */
 	std::vector<Item> items = std::vector<Item>();
@@ -212,6 +218,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	grid.save("saves/world0/world.sav");
+	player.save("saves/world0/player.sav");
+	daycycle.save("saves/world0/daycycle.sav");
 
 	return 0;
 

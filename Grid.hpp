@@ -31,7 +31,7 @@ public:
 	void moveCamera(float x, float y);
 	void setCamera(float x, float y);
 
-	bool load(Vec2 screenSize, const char *filename);
+	bool load(const char *filename);
 	void save(const char *filename);
 
 	void generate();
