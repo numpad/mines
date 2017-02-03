@@ -49,7 +49,6 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed)
 		window.close();
 }
 
-#include <iostream>
 int main(int argc, char *argv[]) {
 	Vec2 screenSize = Vec2(800, 740); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);

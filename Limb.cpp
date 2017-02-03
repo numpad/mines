@@ -91,6 +91,7 @@ void Limb::update() {
 }
 
 void Limb::render(sf::RenderWindow& window, Vec2 off) {
+	Limb::sprite.setScale(Limb::flipx, Limb::flipy);
 	Limb::sprite.setPosition(Limb::pos.x + Limb::offset.x + off.x, Limb::pos.y + Limb::offset.y + off.y);
 	window.draw(Limb::sprite);
 }
@@ -102,16 +103,13 @@ void Limb::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 
 void Limb::renderChild(size_t idx, sf::RenderWindow& window, Vec2 off) {
 	Limb& child = Limb::children.at(idx);
-
-	child.sprite.setPosition(child.pos.x + child.offset.x + off.x, child.pos.y + child.offset.y + off.y);
-	window.draw(child.sprite);
+	child.render(window, off);
 }
 
 void Limb::renderChild(size_t idx, sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 	Limb& child = Limb::children.at(idx);
 
-	child.sprite.setPosition(child.pos.x + child.offset.x + off.x, child.pos.y + child.offset.y + off.y);
-	window.draw(child.sprite, &shader);
+	child.render(window, shader, off);
 }
 
 void Limb::renderAll(sf::RenderWindow& window, std::vector<size_t> childidx, Vec2 offset) {

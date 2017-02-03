@@ -42,10 +42,10 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::inventoryHotbarSprite.setPosition(screenSize.x / 2.0 - (float)Player::inventoryHotbarTexture.getSize().x / 2.0, screenSize.y - (float)Player::inventoryHotbarTexture.getSize().y * 1.25);
 
 	/* Create Limbs and attach to body */
-	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  0)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -6)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -4)));
-	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -4)));
+	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  1)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -4)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -2)));
+	Player::addChildLimb(Limb(Player::skin, sf::IntRect(19, 29,  8, 24), Vec2(0.5, 0.1), Vec2( 0, -2)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(33,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect(46,  3,  8, 24), Vec2(0.5, 0.1), Vec2( 0,  7)));
 
@@ -55,7 +55,6 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::armf = &Player::body.getChild(2);
 	Player::legf = &Player::body.getChild(3);
 	Player::legb = &Player::body.getChild(4);
-	
 }
 
 void Player::animate(Grid& grid) {
@@ -83,6 +82,11 @@ void Player::update(Grid& grid) {
 	Player::body.update();
 	Player::physicsUpdate(grid);
 	Player::animate(grid);
+
+	if (Player::walkdir == Entity::WalkState::LEFT)
+		Player::head->flipx = -1;
+	else if (Player::walkdir == Entity::WalkState::RIGHT)
+		Player::head->flipx = 1;
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
