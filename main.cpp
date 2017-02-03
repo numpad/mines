@@ -176,7 +176,9 @@ int main(int argc, char *argv[]) {
 			Item &item = items.at(i);
 			item.update(grid);
 
+			/* Check if the player can collect the item */
 			if (item.collectableBy(player)) {
+				/* Collect item and remove it */
 				player.collectItems(item.getType());
 				items.erase(items.begin() + i);
 			}

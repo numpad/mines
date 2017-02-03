@@ -34,6 +34,8 @@ public:
 	blockid getItem();
 	blockid takeItem();
 	size_t collectItems(blockid type, size_t count = 1);
+	bool canCollect(blockid type);
+	
 	void selectItem(size_t index);
 
 	void setPlaceMode(PlaceMode);

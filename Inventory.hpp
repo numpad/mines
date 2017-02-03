@@ -41,6 +41,7 @@ public:
 	
 	/* Returns true if at least one InventoryStack does not hold any items */
 	bool hasSpace();
+	bool hasSpaceFor(blockid);
 
 	/* Returns the InventoryStack at index */
 	InventoryStack &at(size_t);

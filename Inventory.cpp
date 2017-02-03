@@ -68,6 +68,15 @@ bool Inventory::hasSpace() {
 	return false;
 }
 
+bool Inventory::hasSpaceFor(blockid type) {
+	for (size_t i = 0; i < Inventory::getSize(); ++i) {
+		if (Inventory::at(i).isFree() || (Inventory::at(i).type == type && Inventory::at(i).count < Inventory::at(i).size)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 InventoryStack &Inventory::at(size_t idx) {
 	return content.at(idx);
 }

@@ -130,6 +130,10 @@ blockid Player::takeItem() {
 	return Player::inventory.at(Player::currentItemSelected).take();
 }
 
+bool Player::canCollect(blockid type) {
+	return Player::inventory.hasSpaceFor(type);
+}
+
 size_t Player::collectItems(blockid type, size_t count) {
 	Player::inventory.add(InventoryStack(count, type));
 	return 0;
