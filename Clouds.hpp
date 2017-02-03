@@ -10,8 +10,7 @@ class Clouds {
 	sf::RenderTexture cloudySky;
 	sf::Sprite cloudySkySprite;
 
-	float windVelocity;
-
+	float windVelocity, windOffset;
 public:
 
 	Clouds(Vec2);

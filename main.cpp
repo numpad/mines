@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 			Random throwVely(1.5, 4.5);
 			blockid thrownItem = player.takeItem();
 			if (thrownItem != BLOCK_AIR)
-				items.push_back(Item(player.pos, thrownItem, Vec2(throwVelx(), -throwVely())));
+				items.push_back(Item(player.pos, thrownItem, Vec2(throwVelx() * player.walkdir, -throwVely())));
 		}
 
 

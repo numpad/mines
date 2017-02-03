@@ -59,7 +59,7 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 
 void Player::animate(Grid& grid) {
 	if (Player::walkstate == Entity::WalkState::WALKING) {
-		Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.0 : 1.0;
+		Player::legAnimation += Player::walkdir;
 
 		Player::legf->getAngle() =  sin(Player::legAnimation / 6.0) * 30.0;
 		Player::legb->getAngle() = -Player::legf->getAngle();
@@ -67,7 +67,7 @@ void Player::animate(Grid& grid) {
 		Player::armb->getAngle() = -Player::armf->getAngle();
 	} else if (Player::walkstate == Entity::WalkState::STANDING) {
 		if (fabs(Player::vel.x) > 0.0) {
-			Player::legAnimation += (Player::walkdir == Entity::WalkState::LEFT) ? -1.5 : 1.5;
+			Player::legAnimation += Player::walkdir * 1.5;
 		} else {
 			Player::legAnimation = 0.0;
 		}
@@ -83,10 +83,7 @@ void Player::update(Grid& grid) {
 	Player::physicsUpdate(grid);
 	Player::animate(grid);
 
-	if (Player::walkdir == Entity::WalkState::LEFT)
-		Player::head->flipx = -1;
-	else if (Player::walkdir == Entity::WalkState::RIGHT)
-		Player::head->flipx = 1;
+	Player::head->flipx = Player::walkdir;
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {

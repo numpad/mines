@@ -36,7 +36,7 @@ public:
 		};
 		
 		enum Direction {
-			LEFT, RIGHT
+			LEFT = -1, RIGHT = 1
 		};
 	};
 

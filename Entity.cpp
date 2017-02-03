@@ -99,7 +99,7 @@ void Entity::physicsHandleWalking(Grid& grid) {
 
 	/* When walking, update position */
 	if (Entity::walkstate == Entity::WalkState::WALKING) {
-		Entity::vel.x += Entity::acc.x * (Entity::walkdir == Entity::WalkState::LEFT ? -1.0 : 1.0);
+		Entity::vel.x += Entity::acc.x * Entity::walkdir;
 	}
 	
 	/* Don't move faster than maximum speed */
