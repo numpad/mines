@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
 	/* World generation */
 	Grid grid(screenSize, 150, 50, "assets/tileset.png");
-	if (!grid.load(screenSize, "world0.sav")) {
+	if (!grid.load(screenSize, "saves/world0/world.sav")) {
 		grid.generate();
 	}
 
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
 		window.display();
 	}
 
-	grid.save("world0.sav");
+	grid.save("saves/world0/world.sav");
 
 	return 0;
 

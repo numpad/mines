@@ -23,6 +23,7 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	/* Inventory */
 	Player::setPlaceMode(Player::PLACE_FOREGROUND);
 	Player::currentItemSelected = 0;
+	/*
 	Player::inventory.add(InventoryStack( 6, BLOCK_TNT));
 	Player::inventory.add(InventoryStack(24, BLOCK_GRASS));
 	Player::inventory.add(InventoryStack(35, BLOCK_WOOD));
@@ -33,6 +34,7 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::inventory.add(InventoryStack( 8, BLOCK_GLASS));
 	Player::inventory.add(InventoryStack(30, BLOCK_COBBLESTONE));
 	Player::inventory.add(InventoryStack(900, BLOCK_ICE, 900));
+	*/
 	
 	if (!Player::inventoryHotbarTexture.loadFromFile("assets/gui/inventory.png")) {
 		puts("[Player] failed loading 'assets/gui/inventory.png'!");
