@@ -1,5 +1,7 @@
 # Mines
 
+[Mines Preview](https://ptpb.pw/D008.png)
+
 NOTE
 ----
 This project is used exclusively for learning purposes.
