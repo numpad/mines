@@ -83,9 +83,6 @@ int main(int argc, char *argv[]) {
 
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
-	BitmapText healthText(defaultfont);
-	healthText.setColor(sf::Color::Green);
-	healthText.write(L"numpad");
 
 	bool isKeyClicked[sf::Keyboard::KeyCount] = {false};
 	sf::Clock clock;
@@ -127,26 +124,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-			player.jump(1.1);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-			player.walk(Entity::WalkState::LEFT);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-			player.walk(Entity::WalkState::RIGHT);
-		}
-		
-		if ((!sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::D))) {
-			player.walkstate = Entity::WalkState::STANDING;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
-			player.setPlaceMode(Player::PLACE_BACKGROUND);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
-			player.setPlaceMode(Player::PLACE_FOREGROUND);
-		}
+		player.handleInput();
 
 		if (isKeyClicked[sf::Keyboard::Q]) {
 			Random throwVelx(2.5, 3.45);
@@ -156,28 +134,12 @@ int main(int argc, char *argv[]) {
 				items.push_back(Item(player.pos, thrownItem, Vec2(throwVelx() * player.walkdir, -throwVely())));
 		}
 
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			player.vel.y -= 0.65;
-			if (player.vel.y < -5.0)
-				player.vel.y = -5.0;
-		}
-
-		for (int i = 0; i < 10; ++i) {
-			if (sf::Keyboard::isKeyPressed(
-				/* Don't make me explain this, it works. No idea why (i - 5) works, but it does. */
-				static_cast<sf::Keyboard::Key>((static_cast<int>(sf::Keyboard::Num0) + (i - 5)) % 10 + static_cast<int>(sf::Keyboard::Num0))
-			)) {
-				player.selectItem(i);
-			}
-		}
-
 		clouds.update(grid);
 
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
-
+		
 		for (size_t i = 0; i < items.size(); ++i) {
 			Item &item = items.at(i);
 			item.update(grid);
@@ -185,8 +147,13 @@ int main(int argc, char *argv[]) {
 			/* Check if the player can collect the item */
 			if (item.collectableBy(player)) {
 				/* Collect item and remove it */
-				player.collectItems(item.getType());
-				items.erase(items.begin() + i);
+				Vec2 dist = (item.pos - player.pos);
+				item.pos -= dist * 0.2;
+
+				if (dist.length() < 20.0) {
+					player.collectItems(item.getType());
+					items.erase(items.begin() + i);
+				}
 			}
 		}
 
@@ -207,9 +174,7 @@ int main(int argc, char *argv[]) {
 
 		/* GUI */
 		player.renderInventory(window);
-		
-		healthText.drawTo(window, player.pos + grid.offset - Vec2(healthText.getSize().x / 2.0, 50));
-		
+
 		if (daycycle.is_night()) {
 			defaultfont.write(window, Vec2(10, 10), L"Nighttime");
 		}

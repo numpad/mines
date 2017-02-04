@@ -57,6 +57,47 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::armf = &Player::body.getChild(2);
 	Player::legf = &Player::body.getChild(3);
 	Player::legb = &Player::body.getChild(4);
+
+	Player::key_up = sf::Keyboard::W;
+	Player::key_down = sf::Keyboard::S;
+	Player::key_left = sf::Keyboard::A;
+	Player::key_right = sf::Keyboard::D;
+	Player::key_place_background = sf::Keyboard::Y;
+	Player::key_place_foreground = sf::Keyboard::X;
+	
+}
+
+void Player::handleInput() {
+	if (sf::Keyboard::isKeyPressed(Player::key_up)) {
+		Player::jump(1.1);
+	}
+	if (sf::Keyboard::isKeyPressed(Player::key_left)) {
+		Player::walk(Entity::WalkState::LEFT);
+	}
+	if (sf::Keyboard::isKeyPressed(Player::key_right)) {
+		Player::walk(Entity::WalkState::RIGHT);
+	}
+	
+	if ((!sf::Keyboard::isKeyPressed(Player::key_left) && !sf::Keyboard::isKeyPressed(Player::key_right)) || (sf::Keyboard::isKeyPressed(Player::key_left) && sf::Keyboard::isKeyPressed(Player::key_right))) {
+		Player::walkstate = Entity::WalkState::STANDING;
+	}
+
+	if (sf::Keyboard::isKeyPressed(Player::key_place_background)) {
+		Player::setPlaceMode(Player::PLACE_BACKGROUND);
+	} else if (sf::Keyboard::isKeyPressed(Player::key_place_foreground)) {
+		Player::setPlaceMode(Player::PLACE_FOREGROUND);
+	}
+
+
+	for (int i = 0; i < 10; ++i) {
+		if (sf::Keyboard::isKeyPressed(
+			/* Don't make me explain this, it works. No idea why (i - 5) works, but it does. */
+			static_cast<sf::Keyboard::Key>((static_cast<int>(sf::Keyboard::Num0) + (i - 5)) % 10 + static_cast<int>(sf::Keyboard::Num0))
+		)) {
+			Player::selectItem(i);
+		}
+	}
+
 }
 
 void Player::animate(Grid& grid) {

@@ -27,6 +27,8 @@ public:
 
 	Player(Vec2 screenSize);
 	
+	void handleInput();
+
 	void animate(Grid& grid);
 	void update(Grid& grid);
 	void render(sf::RenderWindow& window, Vec2 off = Vec2(0.0f, 0.0f));
@@ -58,6 +60,7 @@ private:
 
 	BitmapFont textFont;
 
+	sf::Keyboard::Key key_up, key_down, key_left, key_right, key_place_background, key_place_foreground;
 };
 
 #endif
