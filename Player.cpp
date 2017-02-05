@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10), fullInventory(30), textFont("assets/font/font.png", Vec2(5, 8)) {
+Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40), textFont("assets/font/font.png", Vec2(5, 8)) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -23,6 +23,7 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	/* Inventory */
 	Player::setPlaceMode(Player::PLACE_FOREGROUND);
 	Player::currentItemSelected = 0;
+	Player::showInventory = false;
 	/*
 	Player::inventory.add(InventoryStack( 6, BLOCK_TNT));
 	Player::inventory.add(InventoryStack(24, BLOCK_GRASS));
@@ -73,10 +74,11 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::key_right = sf::Keyboard::D;
 	Player::key_place_background = sf::Keyboard::Y;
 	Player::key_place_foreground = sf::Keyboard::X;
+	Player::key_inventory = sf::Keyboard::Tab;
 	
 }
 
-void Player::handleInput() {
+void Player::handleInput(bool *isKeyClicked) {
 	if (sf::Keyboard::isKeyPressed(Player::key_up)) {
 		Player::jump(1.1);
 	}
@@ -97,6 +99,9 @@ void Player::handleInput() {
 		Player::setPlaceMode(Player::PLACE_FOREGROUND);
 	}
 
+	if (isKeyClicked[Player::key_inventory]) {
+		Player::showInventory = !Player::showInventory;
+	}
 
 	for (int i = 0; i < 10; ++i) {
 		if (sf::Keyboard::isKeyPressed(
@@ -157,7 +162,7 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 
 	/* Render inventory hotbar */
 	window.draw(Player::inventoryHotbarSprite);
-	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
+	for (size_t i = 0; i < MIN(10, Player::inventory.getSize()); ++i) {
 		Block invblock(Player::inventory.at(i).get());
 		if (invblock.id < 0)
 			continue;
@@ -169,19 +174,24 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		}
 		
 		Vec2 invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
-		invblock.render(window, invblockPos);
-
-		/* Blocks left */
-		wchar_t itemCountStr[5];
-		swprintf(itemCountStr, 4, L"%lu", Player::inventory.at(i).count);
-
-		Player::textFont.write(window, invblockPos + Vec2(1, 1), itemCountStr, sf::Color(80, 80, 80));
-		Player::textFont.write(window, invblockPos, itemCountStr);
 		
+		Player::inventory.at(i).render(window, Player::textFont, invblockPos);
 	}
 
 	/* Render full inventory */
-	//window.draw(Player::inventoryFullSprite);
+	if (Player::showInventory) {
+		const float previousScale = Player::textFont.getScale();
+
+		Player::textFont.setScale(2.0);
+		window.draw(Player::inventoryFullSprite);
+		sf::Vector2f invPosLeftCorner = Player::inventoryFullSprite.getPosition() - Player::inventoryFullSprite.getOrigin();
+		Vec2 invTextPos(invPosLeftCorner.x + 3.0, invPosLeftCorner.y + 4.0);
+
+		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Inventory", sf::Color(167, 167, 167));
+		Player::textFont.write(window, invTextPos, L"Inventory", sf::Color(67, 67, 67));
+		
+		Player::textFont.setScale(previousScale);
+	}
 }
 
 blockid Player::getItem() {

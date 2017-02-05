@@ -25,6 +25,9 @@ public:
 	Vec2 getSpacing();
 	sf::IntRect getLetterSize();
 
+	float getScale();
+	void setScale(float);
+
 	sf::IntRect getCharRect(const wchar_t);
 	void writeLetter(sf::RenderTarget &, Vec2, const wchar_t, sf::Color fgColor = sf::Color::White);
 	void write(sf::RenderTarget &, Vec2, std::wstring, sf::Color textColor = sf::Color::White);

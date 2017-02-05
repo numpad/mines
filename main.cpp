@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		player.handleInput();
+		player.handleInput(isKeyClicked);
 
 		if (isKeyClicked[sf::Keyboard::Q]) {
 			Random throwVelx(2.5, 3.45);

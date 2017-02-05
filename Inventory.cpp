@@ -44,6 +44,21 @@ blockid InventoryStack::take() {
 	return BLOCK_AIR;
 }
 
+void InventoryStack::render(sf::RenderTarget &target, BitmapFont &bmf, Vec2 pos) {
+	Block asBlock(get());
+	if (asBlock.id < 0)
+		return;
+	
+	asBlock.render(target, pos);
+
+	/* Blocks left */
+	wchar_t itemCountStr[5];
+	swprintf(itemCountStr, 4, L"%lu", InventoryStack::count);
+	
+	bmf.write(target, pos + Vec2(1, 1), itemCountStr, sf::Color(80, 80, 80));
+	bmf.write(target, pos, itemCountStr);
+}
+
 /* Inventory: */
 
 Inventory::Inventory(size_t elements) {

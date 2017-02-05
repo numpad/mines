@@ -93,6 +93,15 @@ sf::IntRect BitmapFont::getLetterSize() {
 	);
 }
 
+float BitmapFont::getScale() {
+	return BitmapFont::scale;
+}
+
+void BitmapFont::setScale(float scale) {
+	BitmapFont::scale = scale;
+	BitmapFont::charSprite.setScale(scale, scale);
+}
+
 void BitmapFont::writeLetter(sf::RenderTarget &rtex, Vec2 pos, const wchar_t c, sf::Color fgColor) {
 	/* do not draw space */
 	if (c == ' ')

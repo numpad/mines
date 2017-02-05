@@ -3,6 +3,7 @@
 
 #include "Block.hpp"
 #include "Vec2.hpp"
+#include "BitmapFont.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -26,6 +27,8 @@ public:
 	blockid get();
 	/* Acts like InventoryStack::get() but shrinks the stack by one every call */
 	blockid take();
+
+	void render(sf::RenderTarget &, BitmapFont &, Vec2);
 };
 
 class Inventory {

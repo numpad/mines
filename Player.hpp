@@ -1,6 +1,8 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+
 #include "Limb.hpp"
 #include "Entity.hpp"
 #include "Vec2.hpp"
@@ -27,7 +29,7 @@ public:
 
 	Player(Vec2 screenSize);
 	
-	void handleInput();
+	void handleInput(bool *);
 
 	void animate(Grid& grid);
 	void update(Grid& grid);
@@ -55,12 +57,16 @@ private:
 
 	/* Inventory */
 	size_t currentItemSelected;
-	Inventory inventory, fullInventory;
+	Inventory inventory;
+	bool showInventory;
+
 	PlaceMode placeMode;
 
 	BitmapFont textFont;
 
-	sf::Keyboard::Key key_up, key_down, key_left, key_right, key_place_background, key_place_foreground;
+	sf::Keyboard::Key key_up, key_down, key_left, key_right,
+	                  key_place_background, key_place_foreground,
+					  key_inventory;
 };
 
 #endif
