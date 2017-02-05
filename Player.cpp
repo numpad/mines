@@ -24,18 +24,6 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40
 	Player::setPlaceMode(Player::PLACE_FOREGROUND);
 	Player::currentItemSelected = 0;
 	Player::showInventory = false;
-	/*
-	Player::inventory.add(InventoryStack( 6, BLOCK_TNT));
-	Player::inventory.add(InventoryStack(24, BLOCK_GRASS));
-	Player::inventory.add(InventoryStack(35, BLOCK_WOOD));
-	Player::inventory.add(InventoryStack( 2, BLOCK_OVEN));
-	Player::inventory.add(InventoryStack( 1, BLOCK_WORKBENCH));
-	Player::inventory.add(InventoryStack( 8, BLOCK_TREE));
-	Player::inventory.add(InventoryStack(64, BLOCK_GRASS_SNOWY));
-	Player::inventory.add(InventoryStack( 8, BLOCK_GLASS));
-	Player::inventory.add(InventoryStack(30, BLOCK_COBBLESTONE));
-	Player::inventory.add(InventoryStack(900, BLOCK_ICE, 900));
-	*/
 	
 	if (!Player::inventoryHotbarTexture.loadFromFile("assets/gui/inventory.png")) {
 		puts("[Player] failed loading 'assets/gui/inventory.png'!");
@@ -111,7 +99,6 @@ void Player::handleInput(bool *isKeyClicked) {
 			Player::selectItem(i);
 		}
 	}
-
 }
 
 void Player::animate(Grid& grid) {
@@ -191,6 +178,19 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		Player::textFont.write(window, invTextPos, L"Inventory", sf::Color(67, 67, 67));
 		
 		Player::textFont.setScale(previousScale);
+
+		/* Render icons */
+		for (size_t i = 10; i < Player::inventory.getSize(); ++i) {
+			Block invblock(Player::inventory.at(i).get());
+			
+			if (invblock.id < 0)
+				continue;
+			
+			Vec2 invPosLeftCornerVec2(invPosLeftCorner.x, invPosLeftCorner.y);
+			Vec2 invblockPos = invPosLeftCornerVec2 + Vec2((i % 10) * 40, ((i - 10) / 10) * 40) + Vec2(4, 24);
+			Player::inventory.at(i).render(window, Player::textFont, invblockPos);
+		}
+
 	}
 }
 
