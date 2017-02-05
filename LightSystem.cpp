@@ -10,7 +10,7 @@ LightSystem::LightSystem(unsigned int width, unsigned int height) {
 	
 
 	LightSystem::darkness.create(width, height);
-	LightSystem::darkness.clear(sf::Color::Black);
+	LightSystem::darkness.clear(sf::Color(2, 0, 4));
 
 	if (!LightSystem::lightshader.loadFromFile("assets/shaders/illumination.frag", sf::Shader::Fragment)) {
 		puts("failed loading lightsystem shader!");

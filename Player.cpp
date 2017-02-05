@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10), textFont("assets/font/font.png", Vec2(5, 8)) {
+Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10), fullInventory(30), textFont("assets/font/font.png", Vec2(5, 8)) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -43,6 +43,15 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(10
 	Player::inventoryHotbarSprite.setTexture(Player::inventoryHotbarTexture);
 	Player::inventoryHotbarSprite.setPosition(screenSize.x / 2.0 - (float)Player::inventoryHotbarTexture.getSize().x / 2.0, screenSize.y - (float)Player::inventoryHotbarTexture.getSize().y * 1.25);
 
+	/* Full inventory */
+	if (!Player::inventoryFullTexture.loadFromFile("assets/gui/inventory_full.png")) {
+		puts("[Player] failed loading 'assets/gui/inventory_full.png'!");
+	}
+
+	Player::inventoryFullSprite.setTexture(Player::inventoryFullTexture);
+	Player::inventoryFullSprite.setOrigin(Player::inventoryFullTexture.getSize().x / 2.0, Player::inventoryFullTexture.getSize().y / 2.0);
+	Player::inventoryFullSprite.setPosition(screenSize.x / 2.0, screenSize.y / 2.0);
+	
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  1)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -4)));
@@ -127,6 +136,11 @@ void Player::update(Grid& grid) {
 	Player::animate(grid);
 
 	Player::head->flipx = Player::walkdir;
+	Player::armb->flipx = Player::walkdir;
+	Player::armf->flipx = Player::walkdir;
+	Player::legb->flipx = Player::walkdir;
+	Player::legf->flipx = Player::walkdir;
+	Player::body.flipx = Player::walkdir;
 }
 
 void Player::render(sf::RenderWindow& window, Vec2 off) {
@@ -140,8 +154,9 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 /* Inventory Management */
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
-	window.draw(Player::inventoryHotbarSprite);
 
+	/* Render inventory hotbar */
+	window.draw(Player::inventoryHotbarSprite);
 	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
 		Block invblock(Player::inventory.at(i).get());
 		if (invblock.id < 0)
@@ -164,6 +179,9 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		Player::textFont.write(window, invblockPos, itemCountStr);
 		
 	}
+
+	/* Render full inventory */
+	//window.draw(Player::inventoryFullSprite);
 }
 
 blockid Player::getItem() {

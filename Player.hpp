@@ -18,8 +18,8 @@ public:
 	Limb *head, *armb, *armf, *legb, *legf;
 
 	/* Inventory */
-	sf::Texture inventoryHotbarTexture;
-	sf::Sprite inventoryHotbarSprite;
+	sf::Texture inventoryHotbarTexture, inventoryFullTexture;
+	sf::Sprite inventoryHotbarSprite, inventoryFullSprite;
 
 	enum PlaceMode {
 		PLACE_BACKGROUND, PLACE_FOREGROUND
@@ -55,7 +55,7 @@ private:
 
 	/* Inventory */
 	size_t currentItemSelected;
-	Inventory inventory;
+	Inventory inventory, fullInventory;
 	PlaceMode placeMode;
 
 	BitmapFont textFont;

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include <vector>
+
 #include <SFML/Graphics.hpp>
 
 #include "rgb.hpp"
@@ -49,6 +51,25 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed)
 		window.close();
 }
 
+void updateItems(Player &player, Grid &grid, std::vector<Item> &items) {
+	for (size_t i = 0; i < items.size(); ++i) {
+		Item &item = items.at(i);
+		item.update(grid);
+
+		/* Check if the player can collect the item */
+		if (item.collectableBy(player)) {
+			/* Collect item and remove it */
+			Vec2 dist = (item.pos - player.pos);
+			item.pos -= dist * 0.2;
+
+			if (dist.length() < 20.0) {
+				player.collectItems(item.getType());
+				items.erase(items.begin() + i);
+			}
+		}
+	}
+}
+
 int main(int argc, char *argv[]) {
 	Vec2 screenSize = Vec2(800, 740); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
@@ -85,11 +106,9 @@ int main(int argc, char *argv[]) {
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
 
 	bool isKeyClicked[sf::Keyboard::KeyCount] = {false};
-	sf::Clock clock;
 	while (window.isOpen()) {
 		handle_events(window, screenSize, isKeyClicked);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-		//float elapsed = clock.getElapsedTime().asMilliseconds() / 120.0;
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
@@ -139,23 +158,8 @@ int main(int argc, char *argv[]) {
 		//player.head->getAngle() = mouse.angle(grid.offset + player.head->pos + player.pos + player.head->offset) - 180.0;
 		player.update(grid);
 		grid.offset = screenSize / 2.0 - player.pos + Vec2(0.0, 50.0);
-		
-		for (size_t i = 0; i < items.size(); ++i) {
-			Item &item = items.at(i);
-			item.update(grid);
 
-			/* Check if the player can collect the item */
-			if (item.collectableBy(player)) {
-				/* Collect item and remove it */
-				Vec2 dist = (item.pos - player.pos);
-				item.pos -= dist * 0.2;
-
-				if (dist.length() < 20.0) {
-					player.collectItems(item.getType());
-					items.erase(items.begin() + i);
-				}
-			}
-		}
+		updateItems(player, grid, items);
 
 		/* Rendering: */
 		daycycle.render(window, grid);
