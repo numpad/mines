@@ -41,6 +41,10 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40
 	Player::inventoryFullSprite.setOrigin(Player::inventoryFullTexture.getSize().x / 2.0, Player::inventoryFullTexture.getSize().y / 2.0);
 	Player::inventoryFullSprite.setPosition(screenSize.x / 2.0, screenSize.y / 2.0);
 	
+	Player::inventoryGui.addCell(Vec2(10, 10));
+	Player::inventoryGui.addCell(Vec2(50, 10));
+	
+
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  1)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -4)));
@@ -146,25 +150,6 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 /* Inventory Management */
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
-
-	/* Render inventory hotbar */
-	window.draw(Player::inventoryHotbarSprite);
-	for (size_t i = 0; i < MIN(10, Player::inventory.getSize()); ++i) {
-		Block invblock(Player::inventory.at(i).get());
-		if (invblock.id < 0)
-			continue;
-		
-		float yoff = 0;
-		if (i == Player::currentItemSelected) {
-			float elapsed = Player::timeAlive.getElapsedTime().asSeconds();
-			yoff = -fabs(sin(elapsed * 4.0) * 7.0);
-		}
-		
-		Vec2 invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
-		
-		Player::inventory.at(i).render(window, Player::textFont, invblockPos);
-	}
-
 	/* Render full inventory */
 	if (Player::showInventory) {
 		const float previousScale = Player::textFont.getScale();
@@ -177,6 +162,12 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Inventory", sf::Color(167, 167, 167));
 		Player::textFont.write(window, invTextPos, L"Inventory", sf::Color(67, 67, 67));
 		
+		invTextPos.y += 140;
+		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Hotbar", sf::Color(167, 167, 167));
+		Player::textFont.write(window, invTextPos, L"Hotbar", sf::Color(67, 67, 67));
+		
+		
+
 		Player::textFont.setScale(previousScale);
 
 		/* Render icons */
@@ -192,6 +183,34 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		}
 
 	}
+
+	/* Render inventory hotbar */
+	if (!Player::showInventory) {
+		window.draw(Player::inventoryHotbarSprite);
+	}
+
+	for (size_t i = 0; i < MIN(10, Player::inventory.getSize()); ++i) {
+		Block invblock(Player::inventory.at(i).get());
+		if (invblock.id < 0)
+			continue;
+		
+		Vec2 invblockPos;
+		if (Player::showInventory) {
+			invblockPos = Vec2(Player::inventoryFullSprite.getPosition().x - Player::inventoryFullSprite.getOrigin().x + 4.0,
+							   Player::inventoryFullSprite.getPosition().y + 60 + 4.0) + Vec2(i * 40, 0);
+		} else {
+			float yoff = 0;
+			if (i == Player::currentItemSelected) {
+				float elapsed = Player::timeAlive.getElapsedTime().asSeconds();
+				yoff = -fabs(sin(elapsed * 4.0) * 7.0);
+			}
+
+			invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
+		}
+
+		Player::inventory.at(i).render(window, Player::textFont, invblockPos);
+	}
+
 }
 
 blockid Player::getItem() {

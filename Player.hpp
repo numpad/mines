@@ -10,6 +10,7 @@
 #include "Inventory.hpp"
 #include "BitmapFont.hpp"
 #include "BitmapText.hpp"
+#include "InventoryGUI.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <stdio.h>
@@ -59,6 +60,8 @@ private:
 	size_t currentItemSelected;
 	Inventory inventory;
 	bool showInventory;
+
+	InventoryGUI inventoryGui;
 
 	PlaceMode placeMode;
 

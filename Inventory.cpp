@@ -41,6 +41,8 @@ blockid InventoryStack::take() {
 		InventoryStack::count--;
 		return InventoryStack::type;
 	}
+
+	InventoryStack::type = BLOCK_AIR;
 	return BLOCK_AIR;
 }
 
