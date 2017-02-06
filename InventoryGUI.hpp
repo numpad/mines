@@ -4,6 +4,7 @@
 #include "Vec2.hpp"
 #include "Block.hpp"
 #include "Inventory.hpp"
+#include "BitmapFont.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -25,6 +26,9 @@ public:
 	InventoryGUI();
 
 	void addCell(Vec2);
+	InventoryCell &getCell(size_t);
+
+	void render(sf::RenderTarget &, Vec2, BitmapFont &);
 };
 
 #endif

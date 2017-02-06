@@ -44,7 +44,6 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40
 	Player::inventoryGui.addCell(Vec2(10, 10));
 	Player::inventoryGui.addCell(Vec2(50, 10));
 	
-
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  1)));
 	Player::addChildLimb(Limb(Player::skin, sf::IntRect( 5,  5, 22, 22), Vec2(0.5, 0.9), Vec2( 0, -4)));
@@ -150,6 +149,8 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 /* Inventory Management */
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
+	inventoryGui.render(window, off, Player::textFont);
+	
 	/* Render full inventory */
 	if (Player::showInventory) {
 		const float previousScale = Player::textFont.getScale();
