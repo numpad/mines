@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 		handle_events(window, screenSize, isKeyClicked);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && !player.showInventory) {
 			Block& current = grid.atPoint(mouse.x, mouse.y, player.getPlaceMode());
 			
 			if (!current.collides()) {
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 					current = Block(blockToPlace);
 			}
 		}
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !player.showInventory) {
 			int bx, by;
 			grid.point_to_grid(mouse.x, mouse.y, bx, by);
 			Block& current = grid.at(bx, by, player.getPlaceMode());

@@ -8,25 +8,22 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class InventoryCell {
-	
-public:
-	Vec2 pos;
-	InventoryStack stack;
-
-	InventoryCell(Vec2, InventoryStack stack = InventoryStack());
-};
-
 class InventoryGUI {
 	
-	std::vector<InventoryCell> itemCells;
+	std::vector<Vec2> itemCells;
+	Inventory items;
 
 public:
 
-	InventoryGUI();
+	InventoryGUI(size_t itemCount = 40);
 
 	void addCell(Vec2);
-	InventoryCell &getCell(size_t);
+	Vec2 &getCell(size_t);
+	bool intersectsCell(size_t, Vec2);
+	
+	size_t getSize();
+
+	Inventory &getItems();
 
 	void render(sf::RenderTarget &, Vec2, BitmapFont &);
 };

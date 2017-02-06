@@ -19,7 +19,8 @@
 class Player : public Entity {
 public:
 	Limb *head, *armb, *armf, *legb, *legf;
-
+	bool showInventory;
+	
 	/* Inventory */
 	sf::Texture inventoryHotbarTexture, inventoryFullTexture;
 	sf::Sprite inventoryHotbarSprite, inventoryFullSprite;
@@ -58,10 +59,8 @@ private:
 
 	/* Inventory */
 	size_t currentItemSelected;
-	Inventory inventory;
-	bool showInventory;
-
 	InventoryGUI inventoryGui;
+
 
 	PlaceMode placeMode;
 

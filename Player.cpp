@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40), textFont("assets/font/font.png", Vec2(5, 8)) {
+Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), textFont("assets/font/font.png", Vec2(5, 8)) {
 	/* Offset body --> feet */
 	Player::feetOffset = Vec2(7.0, 37.0);
 	Player::headOffset = Vec2(6.0, -28.0);
@@ -41,8 +41,21 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), inventory(40
 	Player::inventoryFullSprite.setOrigin(Player::inventoryFullTexture.getSize().x / 2.0, Player::inventoryFullTexture.getSize().y / 2.0);
 	Player::inventoryFullSprite.setPosition(screenSize.x / 2.0, screenSize.y / 2.0);
 	
-	Player::inventoryGui.addCell(Vec2(10, 10));
-	Player::inventoryGui.addCell(Vec2(50, 10));
+	Vec2 gridStart(4, 124);
+	Vec2 hotbarStart(4, 264);
+
+	Vec2 gridStepX(40, 0);
+	Vec2 gridStepY(0, 40);
+	for (size_t x = 0; x < 10; ++x) {
+		Vec2 gridCellPos = hotbarStart + (gridStepX * x);
+		Player::inventoryGui.addCell(gridCellPos);
+	}
+	for (size_t y = 0; y < 3; ++y) {
+		for (size_t x = 0; x < 10; ++x) {
+			Vec2 gridCellPos = gridStart + (gridStepX * x) + (gridStepY * y);
+			Player::inventoryGui.addCell(gridCellPos);
+		}
+	}
 	
 	/* Create Limbs and attach to body */
 	Player::addLimb(     Limb(Entity::skin, sf::IntRect( 5, 29,  8, 24), Vec2(0.5, 0.5), Vec2( 0,  1)));
@@ -149,8 +162,6 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 /* Inventory Management */
 
 void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
-	inventoryGui.render(window, off, Player::textFont);
-	
 	/* Render full inventory */
 	if (Player::showInventory) {
 		const float previousScale = Player::textFont.getScale();
@@ -160,46 +171,35 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		sf::Vector2f invPosLeftCorner = Player::inventoryFullSprite.getPosition() - Player::inventoryFullSprite.getOrigin();
 		Vec2 invTextPos(invPosLeftCorner.x + 3.0, invPosLeftCorner.y + 4.0);
 
+		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Crafting", sf::Color(167, 167, 167));
+		Player::textFont.write(window, invTextPos, L"Crafting", sf::Color(67, 67, 67));
+		
+		invTextPos.y += 103;
 		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Inventory", sf::Color(167, 167, 167));
 		Player::textFont.write(window, invTextPos, L"Inventory", sf::Color(67, 67, 67));
 		
-		invTextPos.y += 140;
-		Player::textFont.write(window, invTextPos + Vec2(1.0, 1.0), L"Hotbar", sf::Color(167, 167, 167));
-		Player::textFont.write(window, invTextPos, L"Hotbar", sf::Color(67, 67, 67));
-		
-		
-
 		Player::textFont.setScale(previousScale);
 
-		/* Render icons */
-		for (size_t i = 10; i < Player::inventory.getSize(); ++i) {
-			Block invblock(Player::inventory.at(i).get());
-			
-			if (invblock.id < 0)
-				continue;
-			
-			Vec2 invPosLeftCornerVec2(invPosLeftCorner.x, invPosLeftCorner.y);
-			Vec2 invblockPos = invPosLeftCornerVec2 + Vec2((i % 10) * 40, ((i - 10) / 10) * 40) + Vec2(4, 24);
-			Player::inventory.at(i).render(window, Player::textFont, invblockPos);
-		}
+		inventoryGui.render(window,
+		Vec2(
+			Player::inventoryFullSprite.getPosition().x - Player::inventoryFullSprite.getOrigin().x,
+			Player::inventoryFullSprite.getPosition().y - Player::inventoryFullSprite.getOrigin().y
+		) + off,
+		Player::textFont);
+	
 
 	}
 
 	/* Render inventory hotbar */
 	if (!Player::showInventory) {
 		window.draw(Player::inventoryHotbarSprite);
-	}
 
-	for (size_t i = 0; i < MIN(10, Player::inventory.getSize()); ++i) {
-		Block invblock(Player::inventory.at(i).get());
-		if (invblock.id < 0)
-			continue;
-		
-		Vec2 invblockPos;
-		if (Player::showInventory) {
-			invblockPos = Vec2(Player::inventoryFullSprite.getPosition().x - Player::inventoryFullSprite.getOrigin().x + 4.0,
-							   Player::inventoryFullSprite.getPosition().y + 60 + 4.0) + Vec2(i * 40, 0);
-		} else {
+		for (size_t i = 0; i < MIN(10, Player::inventoryGui.getItems().getSize()); ++i) {
+			Block invblock(Player::inventoryGui.getItems().at(i).get());
+			if (invblock.id < 0)
+				continue;
+			
+			Vec2 invblockPos;
 			float yoff = 0;
 			if (i == Player::currentItemSelected) {
 				float elapsed = Player::timeAlive.getElapsedTime().asSeconds();
@@ -207,27 +207,28 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 			}
 
 			invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
-		}
+		
 
-		Player::inventory.at(i).render(window, Player::textFont, invblockPos);
+			Player::inventoryGui.getItems().at(i).render(window, Player::textFont, invblockPos);
+		}
 	}
 
 }
 
 blockid Player::getItem() {
-	return Player::inventory.at(Player::currentItemSelected).get();
+	return Player::inventoryGui.getItems().at(Player::currentItemSelected).get();
 }
 
 blockid Player::takeItem() {
-	return Player::inventory.at(Player::currentItemSelected).take();
+	return Player::inventoryGui.getItems().at(Player::currentItemSelected).take();
 }
 
 bool Player::canCollect(blockid type) {
-	return Player::inventory.hasSpaceFor(type);
+	return Player::inventoryGui.getItems().hasSpaceFor(type);
 }
 
 size_t Player::collectItems(blockid type, size_t count) {
-	Player::inventory.add(InventoryStack(count, type));
+	Player::inventoryGui.getItems().add(InventoryStack(count, type));
 	return 0;
 }
 
@@ -252,7 +253,7 @@ bool Player::load(const char *fn) {
 	float loaded_position[2];
 	fread(loaded_position, sizeof(float), 2, fp);
 
-	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
+	for (size_t i = 0; i < Player::inventoryGui.getSize(); ++i) {
 		size_t blockCount;
 		blockid blockId;
 
@@ -278,9 +279,9 @@ void Player::save(const char *fn) {
 	fwrite(&(Player::pos.x), sizeof(float), 1, fp);
 	fwrite(&(Player::pos.y), sizeof(float), 1, fp);
 	
-	for (size_t i = 0; i < Player::inventory.getSize(); ++i) {
-		fwrite(&(Player::inventory.at(i).count), sizeof(size_t), 1, fp);
-		const int blockId = Player::inventory.at(i).get();
+	for (size_t i = 0; i < Player::inventoryGui.getItems().getSize(); ++i) {
+		fwrite(&(Player::inventoryGui.getItems().at(i).count), sizeof(size_t), 1, fp);
+		const int blockId = Player::inventoryGui.getItems().at(i).get();
 
 		fwrite(&(blockId), sizeof(blockid), 1, fp);
 		
