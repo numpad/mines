@@ -5,6 +5,7 @@
 #include "Block.hpp"
 #include "Inventory.hpp"
 #include "BitmapFont.hpp"
+#include "Input.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -12,6 +13,7 @@ class InventoryGUI {
 	
 	std::vector<Vec2> itemCells;
 	Inventory items;
+	InventoryStack selectedItemStack;
 
 public:
 
@@ -19,13 +21,13 @@ public:
 
 	void addCell(Vec2);
 	Vec2 &getCell(size_t);
-	bool intersectsCell(size_t, Vec2);
-	
+	bool intersectsCell(size_t, Vec2, Vec2);
+
 	size_t getSize();
 
 	Inventory &getItems();
 
-	void render(sf::RenderTarget &, Vec2, BitmapFont &);
+	void render(sf::RenderWindow &, Vec2, BitmapFont &);
 };
 
 #endif

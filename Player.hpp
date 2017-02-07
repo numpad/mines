@@ -11,6 +11,7 @@
 #include "BitmapFont.hpp"
 #include "BitmapText.hpp"
 #include "InventoryGUI.hpp"
+#include "Input.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <stdio.h>
@@ -20,7 +21,7 @@ class Player : public Entity {
 public:
 	Limb *head, *armb, *armf, *legb, *legf;
 	bool showInventory;
-	
+
 	/* Inventory */
 	sf::Texture inventoryHotbarTexture, inventoryFullTexture;
 	sf::Sprite inventoryHotbarSprite, inventoryFullSprite;
@@ -31,7 +32,7 @@ public:
 
 	Player(Vec2 screenSize);
 	
-	void handleInput(bool *);
+	void handleInput();
 
 	void animate(Grid& grid);
 	void update(Grid& grid);

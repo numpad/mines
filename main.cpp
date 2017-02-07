@@ -24,10 +24,11 @@
 #include "BitmapFont.hpp"
 #include "BitmapText.hpp"
 #include "Clouds.hpp"
+#include "Input.hpp"
 
-void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed) {
-	for (size_t i = 0; i < sf::Keyboard::KeyCount; ++i)
-		keypressed[i] = false;
+void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
+	Input::clearKeysClicked();
+	Input::clearMouseClicked();
 	
 	sf::Event event;
 	while (window.pollEvent(event)) {
@@ -36,7 +37,10 @@ void handle_events(sf::RenderWindow& window, Vec2 &screenSize, bool *keypressed)
 				window.close();
 				break;
 			case sf::Event::KeyPressed:
-				keypressed[event.key.code] = true;
+				Input::updateKeysClicked(event.key.code, true);
+				break;
+			case sf::Event::MouseButtonPressed:
+				Input::updateMouseClicked(event.mouseButton.button, true);
 				break;
 			case sf::Event::Resized:
 				screenSize.x = event.size.width;
@@ -105,9 +109,8 @@ int main(int argc, char *argv[]) {
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
 
-	bool isKeyClicked[sf::Keyboard::KeyCount] = {false};
 	while (window.isOpen()) {
-		handle_events(window, screenSize, isKeyClicked);
+		handle_events(window, screenSize);
 		Vec2 mouse(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && !player.showInventory) {
@@ -143,9 +146,9 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		player.handleInput(isKeyClicked);
+		player.handleInput();
 
-		if (isKeyClicked[sf::Keyboard::Q]) {
+		if (Input::isKeyClicked(sf::Keyboard::Q)) {
 			Random throwVelx(2.5, 3.45);
 			Random throwVely(1.5, 4.5);
 			blockid thrownItem = player.takeItem();

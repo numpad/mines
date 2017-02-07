@@ -82,7 +82,7 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), textFont("as
 	
 }
 
-void Player::handleInput(bool *isKeyClicked) {
+void Player::handleInput() {
 	if (sf::Keyboard::isKeyPressed(Player::key_up)) {
 		Player::jump(1.1);
 	}
@@ -103,7 +103,7 @@ void Player::handleInput(bool *isKeyClicked) {
 		Player::setPlaceMode(Player::PLACE_FOREGROUND);
 	}
 
-	if (isKeyClicked[Player::key_inventory]) {
+	if (Input::isKeyClicked(Player::key_inventory)) {
 		Player::showInventory = !Player::showInventory;
 	}
 
@@ -260,7 +260,11 @@ bool Player::load(const char *fn) {
 		fread(&blockCount, sizeof(size_t), 1, fp);
 		fread(&blockId, sizeof(blockid), 1, fp);
 
-		Player::collectItems(blockId, blockCount);
+		//Player::collectItems(blockId, blockCount);
+		Player::inventoryGui.getItems().add(InventoryStack());
+		Player::inventoryGui.getItems().at(i).count = blockCount;
+		Player::inventoryGui.getItems().at(i).type = blockId;
+		
 	}
 
 	Player::setPos(Vec2(loaded_position[0], loaded_position[1]));
