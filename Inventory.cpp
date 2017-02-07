@@ -11,6 +11,11 @@ InventoryStack::InventoryStack(size_t count, blockid type, size_t maxSize) {
 InventoryStack::InventoryStack() : InventoryStack(0, BLOCK_AIR, 0) {
 }
 
+bool InventoryStack::operator==(const  InventoryStack &rhs) {
+	return (InventoryStack::type == rhs.type && InventoryStack::count > 0 && rhs.count > 0);
+}
+
+
 bool InventoryStack::isFree() {
 	return (type == BLOCK_AIR || count == 0);
 }
@@ -33,6 +38,8 @@ blockid InventoryStack::get() {
 	if (InventoryStack::count > 0) {
 		return InventoryStack::type;
 	}
+	InventoryStack::size = 0;
+	InventoryStack::type = BLOCK_AIR;
 	return BLOCK_AIR;
 }
 
@@ -41,7 +48,8 @@ blockid InventoryStack::take() {
 		InventoryStack::count--;
 		return InventoryStack::type;
 	}
-
+	
+	InventoryStack::size = 0;
 	InventoryStack::type = BLOCK_AIR;
 	return BLOCK_AIR;
 }

@@ -36,16 +36,50 @@ void InventoryGUI::render(sf::RenderWindow &target, Vec2 guiOffset, BitmapFont &
 	Vec2 mousePos(sf::Mouse::getPosition(target).x, sf::Mouse::getPosition(target).y);
 
 	for (size_t i = 0; i < InventoryGUI::itemCells.size(); ++i) {
-		Block invblock(InventoryGUI::items.at(i).get());
 		
 		/* Try selecting an item */
 		if (Input::isMouseClicked(sf::Mouse::Left) && InventoryGUI::intersectsCell(i, mousePos, guiOffset)) {
-			InventoryStack lastSelected = InventoryGUI::selectedItemStack;
-			InventoryGUI::selectedItemStack = InventoryGUI::items.at(i);
-			InventoryGUI::items.at(i) = lastSelected;
+			/* Check if we can stack items of the same type... */
+			if (InventoryGUI::items.at(i) == InventoryGUI::selectedItemStack) {
+				size_t leftover = InventoryGUI::items.at(i).add(InventoryGUI::selectedItemStack.count);
+				InventoryGUI::selectedItemStack = InventoryStack(leftover, InventoryGUI::items.at(i).type, InventoryGUI::items.at(i).size);
+			} else { /* ...or swap them */
+				InventoryStack lastSelected = InventoryGUI::selectedItemStack;
+				InventoryGUI::selectedItemStack = InventoryGUI::items.at(i);
+				InventoryGUI::items.at(i) = lastSelected;
+			}
 		}
 		
-		if (invblock.id < 0)
+		if (Input::isMouseClicked(sf::Mouse::Right) && InventoryGUI::intersectsCell(i, mousePos, guiOffset)) {
+			/* Check if currently an itemstack is selected */
+			if (InventoryGUI::selectedItemStack.isFree()) {
+				size_t items_count = floor(InventoryGUI::items.at(i).count / 2.0);
+				blockid items_type = InventoryGUI::items.at(i).type;
+				size_t items_max = InventoryGUI::items.at(i).size;
+				
+				InventoryGUI::items.at(i).count -= items_count;
+				InventoryGUI::selectedItemStack = InventoryStack(items_count, items_type, items_max);
+			} else {
+				blockid oneItem = InventoryGUI::selectedItemStack.get();
+				if (oneItem < 0)
+					continue;
+				
+				/* If right click with selected item(s) on free cell, place one item in it */
+				if (InventoryGUI::items.at(i).isFree()) {
+					InventoryGUI::selectedItemStack.take();
+					InventoryGUI::items.at(i).count = 1;
+					InventoryGUI::items.at(i).type = oneItem;
+				} else { /* Right click on already occupied cell, check if same, space left and increase its count by one */
+					if (InventoryGUI::items.at(i) == InventoryGUI::selectedItemStack && InventoryGUI::items.at(i).spaceLeft() > 0) {
+						InventoryGUI::selectedItemStack.take();
+						InventoryGUI::items.at(i).count += 1;
+					}
+				}
+			}
+		}
+		
+
+		if (InventoryGUI::items.at(i).get() < 0)
 			continue;
 		
 		Vec2 finalPos = InventoryGUI::itemCells.at(i) + guiOffset;

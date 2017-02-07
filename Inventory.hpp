@@ -15,6 +15,8 @@ public:
 	InventoryStack(size_t count, blockid type, size_t maxSize = 64);
 	InventoryStack();
 
+	bool operator==(const InventoryStack &);
+
 	/* Returns if this stack is free (no elements or blockid == AIR) */
 	bool isFree();
 
