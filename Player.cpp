@@ -190,7 +190,6 @@ void Player::renderInventory(sf::RenderWindow &window, std::vector<Item> &droppe
 
 	} else {
 		if (!Player::inventoryGui.getSelectedItem().isFree()) {
-			/* TODO: add to dropped items */
 			Random throwVelx(2.5, 3.45);
 			Random throwVely(1.5, 4.5);
 			blockid thrownItem;
@@ -217,7 +216,6 @@ void Player::renderInventory(sf::RenderWindow &window, std::vector<Item> &droppe
 
 			invblockPos = Vec2(Player::inventoryHotbarSprite.getPosition().x + 4.0, Player::inventoryHotbarSprite.getPosition().y + 4.0) + Vec2(i * 40, yoff);
 		
-
 			Player::inventoryGui.getItems().at(i).render(window, Player::textFont, invblockPos);
 		}
 	}

@@ -108,6 +108,8 @@ int main(int argc, char *argv[]) {
 
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
+	BitmapText earlyAlphaText(defaultfont);
+	earlyAlphaText.write(L"Early Alpha");
 
 	while (window.isOpen()) {
 		handle_events(window, screenSize);
@@ -182,9 +184,7 @@ int main(int argc, char *argv[]) {
 		/* GUI */
 		player.renderInventory(window, items);
 
-		if (daycycle.is_night()) {
-			defaultfont.write(window, Vec2(10, 10), L"Nighttime");
-		}
+		earlyAlphaText.drawTo(window, Vec2(10, 10));
 		
 		window.display();
 	}
