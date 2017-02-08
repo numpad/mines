@@ -4,7 +4,6 @@
 #include "Vec2.hpp"
 #include "Block.hpp"
 #include "Grid.hpp"
-#include "Player.hpp"
 #include <SFML/Graphics.hpp>
 
 class Item {
@@ -25,8 +24,8 @@ public:
 	void setCollectTimeout(float seconds);
 
 	float secondsAlive();
-	bool collectableBy(Player &, float radius = 64.0);
-
+	bool collectTimeoutReached();
+	
 	blockid getType();
 
 	void update(Grid &);

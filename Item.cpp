@@ -21,14 +21,8 @@ float Item::secondsAlive() {
 	return Item::timeAlive.getElapsedTime().asSeconds();
 }
 
-bool Item::collectableBy(Player &player, float radius) {
-	if (Item::secondsAlive() < Item::collectTimeout)
-		return false;
-	
-	if (!player.canCollect(Item::type))
-		return false;
-	
-	return (Item::pos - player.pos).length() < radius;
+bool Item::collectTimeoutReached() {
+	return (Item::secondsAlive() >= Item::collectTimeout);
 }
 
 blockid Item::getType() {

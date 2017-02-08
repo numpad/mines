@@ -12,6 +12,7 @@
 #include "BitmapText.hpp"
 #include "InventoryGUI.hpp"
 #include "Input.hpp"
+#include "Item.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <stdio.h>
@@ -39,12 +40,14 @@ public:
 	void render(sf::RenderWindow& window, Vec2 off = Vec2(0.0f, 0.0f));
 	void render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off = Vec2(0.0f, 0.0f));
 
-	void renderInventory(sf::RenderWindow &window, Vec2 off = Vec2(0, 0));
+	void renderInventory(sf::RenderWindow &window, std::vector<Item> &droppedItems, Vec2 off = Vec2(0, 0));
 	blockid getItem();
 	blockid takeItem();
 	size_t collectItems(blockid type, size_t count = 1);
 	bool canCollect(blockid type);
 	
+	bool canCollectItem(Item &item, float radius = 64.0);
+
 	void selectItem(size_t index);
 
 	void setPlaceMode(PlaceMode);

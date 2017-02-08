@@ -61,7 +61,7 @@ void updateItems(Player &player, Grid &grid, std::vector<Item> &items) {
 		item.update(grid);
 
 		/* Check if the player can collect the item */
-		if (item.collectableBy(player)) {
+		if (player.canCollectItem(item)) {
 			/* Collect item and remove it */
 			Vec2 dist = (item.pos - player.pos);
 			item.pos -= dist * 0.2;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
 		lightsystem.render(window);
 
 		/* GUI */
-		player.renderInventory(window);
+		player.renderInventory(window, items);
 
 		if (daycycle.is_night()) {
 			defaultfont.write(window, Vec2(10, 10), L"Nighttime");

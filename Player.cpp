@@ -161,7 +161,7 @@ void Player::render(sf::RenderWindow& window, sf::Shader& shader, Vec2 off) {
 
 /* Inventory Management */
 
-void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
+void Player::renderInventory(sf::RenderWindow &window, std::vector<Item> &droppedItems, Vec2 off) {
 	/* Render full inventory */
 	if (Player::showInventory) {
 		const float previousScale = Player::textFont.getScale();
@@ -188,10 +188,19 @@ void Player::renderInventory(sf::RenderWindow &window, Vec2 off) {
 		Player::textFont);
 	
 
-	}
+	} else {
+		if (!Player::inventoryGui.getSelectedItem().isFree()) {
+			/* TODO: add to dropped items */
+			Random throwVelx(2.5, 3.45);
+			Random throwVely(1.5, 4.5);
+			blockid thrownItem;
+			while ((thrownItem = Player::inventoryGui.getSelectedItem().take()) != BLOCK_AIR) {
+				droppedItems.push_back(Item(Player::pos, thrownItem, Vec2(throwVelx() * Player::walkdir, -throwVely())));
+			}
+			
+			Player::inventoryGui.getSelectedItem() = InventoryStack();
+		}
 
-	/* Render inventory hotbar */
-	if (!Player::showInventory) {
 		window.draw(Player::inventoryHotbarSprite);
 
 		for (size_t i = 0; i < MIN(10, Player::inventoryGui.getItems().getSize()); ++i) {
@@ -242,6 +251,16 @@ void Player::setPlaceMode(Player::PlaceMode pm) {
 
 bool Player::getPlaceMode() {
 	return static_cast<bool>(Player::placeMode);
+}
+
+bool Player::canCollectItem(Item &item, float radius) {
+	if (!item.collectTimeoutReached())
+		return false;
+	
+	if (!Player::canCollect(item.getType()))
+		return false;
+	
+	return (item.pos - Player::pos).length() < radius;
 }
 
 bool Player::load(const char *fn) {

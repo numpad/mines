@@ -32,6 +32,10 @@ Inventory &InventoryGUI::getItems() {
 	return InventoryGUI::items;
 }
 
+InventoryStack &InventoryGUI::getSelectedItem() {
+	return InventoryGUI::selectedItemStack;
+}
+
 void InventoryGUI::render(sf::RenderWindow &target, Vec2 guiOffset, BitmapFont &font) {
 	Vec2 mousePos(sf::Mouse::getPosition(target).x, sf::Mouse::getPosition(target).y);
 

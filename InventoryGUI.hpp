@@ -26,6 +26,7 @@ public:
 	size_t getSize();
 
 	Inventory &getItems();
+	InventoryStack &getSelectedItem();
 
 	void render(sf::RenderWindow &, Vec2, BitmapFont &);
 };
