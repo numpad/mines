@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 	window.setVerticalSyncEnabled(true);
 
 	/* Day/Night cycle */
-	DayCycle daycycle(1000, RGB(61, 159, 203));
+	DayCycle daycycle(5000, RGB(61, 159, 203));
 	if (!daycycle.load("saves/world0/daycycle.sav")) {
 		puts("DayCycle not loaded!");
 	}
@@ -161,9 +161,8 @@ int main(int argc, char *argv[]) {
 	Clouds clouds(screenSize);
 
 	/* Minimap */
-	Minimap minimap(150, 50);
+	Minimap minimap(ceil(screenSize.x / 32.0), ceil(screenSize.y / 32.0));
 	
-
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
 	BitmapText earlyAlphaText(defaultfont);
@@ -226,11 +225,54 @@ int main(int argc, char *argv[]) {
 
 		updateItems(player, grid, items);
 
-		grid.eachVisibleBlock([&minimap](Block &block, int x, int y){
-			if (block.id > 0)
-				minimap.set(x, y, sf::Color::Black);
-			else
-				minimap.set(x, y, sf::Color::White);
+		grid.eachVisibleBlock([&minimap](Block &block, Block &bgBlock, int x, int y){
+			sf::Color setcolor;
+			
+			bool useBackgroundBlock = block.id <= BLOCK_AIR;
+
+			switch (useBackgroundBlock ? bgBlock.id : block.id) {
+				case BLOCK_GRASS:
+					setcolor = sf::Color(115, 179, 73);
+					break;
+				case BLOCK_DIRT:
+					setcolor = sf::Color(121, 85, 58);
+					break;
+				case BLOCK_WOOD:
+					setcolor = sf::Color(188, 152, 98);
+					break;
+				case BLOCK_GLASS:
+					setcolor = sf::Color(200, 200, 225);
+					break;
+				case BLOCK_SNOW:
+				case BLOCK_GRASS_SNOWY:
+					setcolor = sf::Color(233, 233, 233);
+					break;
+				case BLOCK_LEAVES:
+					setcolor = sf::Color(57, 137, 28);
+					break;
+				case BLOCK_TREE:
+				case BLOCK_TREE_BIRCH:
+					setcolor = sf::Color(64, 51, 32);
+					break;
+				case BLOCK_TNT:
+					setcolor = sf::Color(193, 60, 23);
+					break;
+				case BLOCK_STONE:
+				case BLOCK_COBBLESTONE:
+					setcolor = sf::Color(116, 116, 116);
+					break;
+				default:
+					setcolor = sf::Color::Transparent;
+					break;
+			};
+
+			if (useBackgroundBlock) {
+				setcolor.r *= 0.7;
+				setcolor.g *= 0.7;
+				setcolor.b *= 0.7;
+			}
+
+			minimap.set(x, y, setcolor);
 		});
 		minimap.updateTexture();
 
@@ -252,7 +294,6 @@ int main(int argc, char *argv[]) {
 		/* GUI */
 		player.renderInventory(window, items);
 		minimap.draw(window);
-
 		earlyAlphaText.drawTo(window, Vec2(10, 10));
 		
 		window.display();

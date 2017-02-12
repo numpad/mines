@@ -29,6 +29,8 @@ public:
 	Grid(Vec2 screenSize, int width, int height, const char *tileset);
 	~Grid();
 
+	void setSize(size_t, size_t);
+
 	void moveCamera(float x, float y);
 	void setCamera(float x, float y);
 
@@ -53,7 +55,7 @@ public:
 
 	void render(sf::RenderWindow &window);
 
-	void eachVisibleBlock(std::function<void (Block &, int, int)>);
+	void eachVisibleBlock(std::function<void (Block &, Block &, int, int)>);
 };
 
 #endif

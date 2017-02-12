@@ -30,8 +30,6 @@ bool Grid::load(const char *filename) {
 
 
 Grid::Grid(Vec2 screenSize, int w, int h, const char *tileset) {
-	Grid::width = w;
-	Grid::height = h;
 	Grid::offset = Vec2(0.0f, 0.0f);
 	Grid::blocksize = 32;
 	Grid::blocks = std::vector<Block>();
@@ -56,21 +54,27 @@ Grid::Grid(Vec2 screenSize, int w, int h, const char *tileset) {
 
 	Grid::tileset.setSmooth(false);
 	Block::setGlobalTileset(Grid::tileset);
-	
-	for (int i = 0; i < w * h; ++i) {
-		blocks.push_back(Block(-1));
-		background_blocks.push_back(Block(-1));
-	}
 
 	if (!Grid::backgroundShader.loadFromFile("assets/shaders/background.frag", sf::Shader::Fragment)) {
 		puts("[Grid] failed to load shader #2!");
 	}
 	Grid::backgroundShader.setUniform("texture", sf::Shader::CurrentTexture);
 
+	Grid::setSize(w, h);
 }
 
 Grid::~Grid() {
 	
+}
+
+void Grid::setSize(size_t width, size_t height) {
+	Grid::width = width;
+	Grid::height = height;
+
+	for (size_t i = 0; i < width * height; ++i) {
+		Grid::blocks.push_back(Block(-1));
+		Grid::background_blocks.push_back(Block(-1));
+	}
 }
 
 void Grid::save(const char *filename) {
@@ -185,8 +189,8 @@ Block& Grid::atPoint(Vec2 p, bool foreground) {
 
 void Grid::render() {
 	Grid::render(-Grid::offset.x / 32, -Grid::offset.y / 32,
-	            ((int)(Grid::framebuffer).getSize().x / 32) + 32,
-				((int)(Grid::framebuffer).getSize().y / 32) + 32
+	            ((int)(Grid::framebuffer).getSize().x / 32) + 2,
+				((int)(Grid::framebuffer).getSize().y / 32) + 2
 				);
 }
 
@@ -307,19 +311,19 @@ void Grid::generate() {
 	*/
 }
 
-void Grid::eachVisibleBlock(std::function<void (Block &, int, int)> blockFunc) {
+void Grid::eachVisibleBlock(std::function<void (Block &, Block &, int, int)> blockFunc) {
 	
-	int xs = -Grid::offset.x / 32;
-	int ys = -Grid::offset.y / 32;
-	int width = ((int)(Grid::framebuffer).getSize().x / 32) + 32;
-	int height = ((int)(Grid::framebuffer).getSize().x / 32) + 32;
+	int xs = -ceil(Grid::offset.x / 32.0);
+	int ys = -ceil(Grid::offset.y / 32.0);
+	int width = ceil(Grid::framebuffer.getSize().x / 32.0);
+	int height = ceil(Grid::framebuffer.getSize().y / 32.0);
 
 	for (int y = ys; y < ys + height; ++y) {
 		for (int x = xs; x < xs + width; ++x) {
 			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
 				continue;
 			
-			blockFunc(Grid::at(x, y), x, y);
+			blockFunc(Grid::at(x, y), Grid::at(x, y, false), x - xs, y - ys);
 		}
 	}
 }
