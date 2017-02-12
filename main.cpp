@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include <vector>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #include "rgb.hpp"
 #include "rect.hpp"
@@ -74,17 +76,70 @@ void updateItems(Player &player, Grid &grid, std::vector<Item> &items) {
 	}
 }
 
+int run_server(const int port) {
+	printf("[Log] Starting server on port %d...\n", port);
+
+	sf::TcpListener listener;
+	if (listener.listen(port) != sf::Socket::Done) {
+		printf("[Error] Failed listening on port :%d\n", port);
+	}
+
+	sf::TcpSocket client;
+	if (listener.accept(client) != sf::Socket::Done) {
+		printf("[Error] Failed accepting client!\n");
+	}
+
+	puts("[Log] Server stopped!");
+	return 0;
+}
+
+int run_connect(sf::IpAddress &address, int port) {
+	printf("[Log] Connecting to %s:%d\n", address.toString().c_str(), port);
+
+	sf::TcpSocket socket;
+	if (socket.connect(address, port) != sf::Socket::Done) {
+		printf("[Error] Failed connecting to server!\n");
+		return 1;
+	}
+
+	
+
+	puts("[Log] Connect stopped!");
+	return 0;
+}
+
 int main(int argc, char *argv[]) {
+	if (argc >= 2) {
+		int port = 8123;
+		if (!strcmp(argv[1], "--server")) {
+			if (argc >= 3 && argv[2][0] == ':')
+				port = atoi(argv[2] + 1);
+			
+			return run_server(port);
+		} else if (!strcmp(argv[1], "--connect")) {
+			sf::IpAddress serverAddress = sf::IpAddress::getLocalAddress();
+			if (argc >= 3)
+				serverAddress = sf::IpAddress(argv[2]);
+			
+			if (argc >= 4 && argv[3][0] == ':')
+				port = atoi(argv[3] + 1);
+
+			return run_connect(serverAddress, port);
+		}
+	}
+
+
+
 	Vec2 screenSize = Vec2(800, 760); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
 	/* Day/Night cycle */
 	DayCycle daycycle(1000, RGB(61, 159, 203));
-	daycycle.generateNightsky(screenSize);
 	if (!daycycle.load("saves/world0/daycycle.sav")) {
 		puts("DayCycle not loaded!");
 	}
+	daycycle.generateNightsky(screenSize);
 
 	LightSystem lightsystem(screenSize.x, screenSize.y);
 
@@ -120,8 +175,10 @@ int main(int argc, char *argv[]) {
 			
 			if (!current.collides()) {
 				Block blockToPlace(player.takeItem());
-				if (blockToPlace.id != BLOCK_AIR)
+				if (blockToPlace.id != BLOCK_AIR) {
+					player.animateArm(((player.pos + grid.offset) - mouse).angle() - 90.0, 6.0);
 					current = Block(blockToPlace);
+				}
 			}
 		}
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !player.showInventory) {
@@ -131,7 +188,8 @@ int main(int argc, char *argv[]) {
 
 			if (current.id >= 0) {
 				current.applyDamage();
-
+				player.animateArm(((player.pos + grid.offset) - mouse).angle() - 90.0, 10.0);
+				
 				if (current.damage > current.maxDamage()) {
 					/* Jump in random direction */
 					Random velx(-2.0, 2.0);
@@ -142,7 +200,6 @@ int main(int argc, char *argv[]) {
 					destroyedBlockItem.setCollectTimeout(0.0);
 
 					items.push_back(destroyedBlockItem);
-					//player.collectItems(current.id);
 					current = Block(BLOCK_AIR);
 				}
 			}

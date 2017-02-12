@@ -50,6 +50,8 @@ public:
 
 	void selectItem(size_t index);
 
+	void animateArm(float angle, float time = 5.0);
+
 	void setPlaceMode(PlaceMode);
 	bool getPlaceMode();
 
@@ -60,6 +62,8 @@ private:
 	
 	sf::Clock timeAlive;
 	float legAnimation;
+
+	float armfAngle, armfAnimation;
 
 	/* Inventory */
 	size_t currentItemSelected;

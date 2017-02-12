@@ -6,6 +6,9 @@ Player::Player(Vec2 screenSize) : Entity("assets/player/skin.png"), textFont("as
 	Player::headOffset = Vec2(6.0, -28.0);
 	Player::legAnimation = 0.0;
 
+	Player::armfAngle = 0.0;
+	Player::armfAnimation = 0.0;
+
 	/* Jumping, Walking Speed */
 	Player::jumpstrength = 9.5; // TODO: Make a little random
 	Player::acc = Vec2(0.75, 0.0);
@@ -130,6 +133,12 @@ void Player::animate(Grid& grid) {
 			Player::legAnimation += Player::walkdir * 1.5;
 		} else {
 			Player::legAnimation = 0.0;
+		}
+
+		/* Shake arm when building/removing blocks */
+		if (Player::armfAnimation > 0.0) {
+			Player::armfAnimation -= 1.0;
+			Player::armf->getAngle() = Player::armfAngle + sin(Player::armfAnimation * 0.5) * 17.0;
 		}
 
 		Player::legf->getAngle() *= 0.75;
@@ -259,6 +268,14 @@ bool Player::canCollectItem(Item &item, float radius) {
 		return false;
 	
 	return (item.pos - Player::pos).length() < radius;
+}
+
+void Player::animateArm(float angle, float time) {
+	Player::armfAngle = angle;
+
+	if (Player::armfAnimation > 0.025)
+		return;
+	Player::armfAnimation = time;
 }
 
 bool Player::load(const char *fn) {
