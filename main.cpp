@@ -27,6 +27,7 @@
 #include "BitmapText.hpp"
 #include "Clouds.hpp"
 #include "Input.hpp"
+#include "Minimap.hpp"
 
 void handle_events(sf::RenderWindow& window, Vec2 &screenSize) {
 	Input::clearKeysClicked();
@@ -128,8 +129,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-
-
 	Vec2 screenSize = Vec2(800, 760); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
@@ -160,6 +159,10 @@ int main(int argc, char *argv[]) {
 	
 	/* Weather */
 	Clouds clouds(screenSize);
+
+	/* Minimap */
+	Minimap minimap(150, 50);
+	
 
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
@@ -223,6 +226,14 @@ int main(int argc, char *argv[]) {
 
 		updateItems(player, grid, items);
 
+		grid.eachVisibleBlock([&minimap](Block &block, int x, int y){
+			if (block.id > 0)
+				minimap.set(x, y, sf::Color::Black);
+			else
+				minimap.set(x, y, sf::Color::White);
+		});
+		minimap.updateTexture();
+
 		/* Rendering: */
 		daycycle.render(window, grid);
 		clouds.render(window);
@@ -240,6 +251,7 @@ int main(int argc, char *argv[]) {
 
 		/* GUI */
 		player.renderInventory(window, items);
+		minimap.draw(window);
 
 		earlyAlphaText.drawTo(window, Vec2(10, 10));
 		

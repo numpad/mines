@@ -306,3 +306,20 @@ void Grid::generate() {
 	}
 	*/
 }
+
+void Grid::eachVisibleBlock(std::function<void (Block &, int, int)> blockFunc) {
+	
+	int xs = -Grid::offset.x / 32;
+	int ys = -Grid::offset.y / 32;
+	int width = ((int)(Grid::framebuffer).getSize().x / 32) + 32;
+	int height = ((int)(Grid::framebuffer).getSize().x / 32) + 32;
+
+	for (int y = ys; y < ys + height; ++y) {
+		for (int x = xs; x < xs + width; ++x) {
+			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
+				continue;
+			
+			blockFunc(Grid::at(x, y), x, y);
+		}
+	}
+}

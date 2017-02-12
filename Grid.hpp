@@ -7,6 +7,7 @@
 #include "Random.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <functional>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,6 +52,8 @@ public:
 	void render(int xs, int ys, int width, int height);
 
 	void render(sf::RenderWindow &window);
+
+	void eachVisibleBlock(std::function<void (Block &, int, int)>);
 };
 
 #endif
