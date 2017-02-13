@@ -88,17 +88,12 @@ vec4 colormap(float x) {
 
 
 uniform sampler2D texture;
-uniform sampler2D noiseTexture;
 uniform float time;
 uniform vec2 resolution;
 uniform vec2 offset;
 
 float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-
-float perlin(vec2 pos) {
-	return texture2D(noiseTexture, pos).r;
 }
 
 float hardedge(float v) {

@@ -8,8 +8,21 @@ Minimap::Minimap(size_t width, size_t height) {
 	Minimap::width = width;
 	Minimap::height = height;
 
+	/* Load Mask */
+	if (!Minimap::textureMask.loadFromFile("assets/gui/minimap_mask.png")) {
+		printf("Failed loading 'assets/gui/minimap_mask.png'!\n");
+	}
+
+	/* Load mask shader */
+	if (!Minimap::maskShader.loadFromFile("assets/shaders/mask.frag", sf::Shader::Fragment)) {
+		puts("Failed loading 'assets/shaders/mask.frag'!");
+	}
+
+	Minimap::maskShader.setUniform("texture", Minimap::texture);
+	Minimap::maskShader.setUniform("mask", Minimap::textureMask);
+	
 	Minimap::sprite.setTexture(Minimap::texture);
-	Minimap::sprite.setScale(4, 4);
+	Minimap::sprite.setScale(6, 6);
 	Minimap::pixels = (sf::Uint8 *)calloc(width * height * 4, sizeof(sf::Uint8));
 	Minimap::updateTexture();
 }
@@ -47,5 +60,5 @@ void Minimap::update(Grid &grid, size_t x, size_t y) {
 void Minimap::draw(sf::RenderTarget &target) {
 	Minimap::sprite.setPosition(target.getSize().x - (Minimap::sprite.getTextureRect().width * Minimap::sprite.getScale().x) - 10, 10);
 	Minimap::sprite.setTexture(Minimap::texture);
-	target.draw(Minimap::sprite);
+	target.draw(Minimap::sprite, &(Minimap::maskShader));
 }

@@ -6,9 +6,10 @@
 
 class Minimap {
 
-	sf::Texture texture;
+	sf::Texture texture, textureMask;
 	sf::Sprite sprite;
-
+	sf::Shader maskShader;
+	
 	sf::Uint8 *pixels;
 public:
 	size_t width, height;

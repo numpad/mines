@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	Vec2 screenSize = Vec2(800, 760); // 800 x 740
+	Vec2 screenSize = Vec2(890, 780); // 800 x 740
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
@@ -271,7 +271,7 @@ int main(int argc, char *argv[]) {
 				setcolor.g *= 0.7;
 				setcolor.b *= 0.7;
 			}
-
+			
 			minimap.set(x, y, setcolor);
 		});
 		minimap.updateTexture();
