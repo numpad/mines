@@ -55,7 +55,7 @@ public:
 
 	void render(sf::RenderWindow &window);
 
-	void eachVisibleBlock(std::function<void (Block &, Block &, int, int)>);
+	void eachVisibleBlock(std::function<void (Block &, Block &, int, int)>, int xoff = 0, int yoff = 0, int xendoff = 0, int yendoff = 0);
 };
 
 #endif

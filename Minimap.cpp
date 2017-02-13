@@ -22,7 +22,7 @@ Minimap::Minimap(size_t width, size_t height) {
 	Minimap::maskShader.setUniform("mask", Minimap::textureMask);
 	
 	Minimap::sprite.setTexture(Minimap::texture);
-	Minimap::sprite.setScale(6, 6);
+	Minimap::sprite.setScale(4, 4);
 	Minimap::pixels = (sf::Uint8 *)calloc(width * height * 4, sizeof(sf::Uint8));
 	Minimap::updateTexture();
 }

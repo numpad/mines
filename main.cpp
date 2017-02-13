@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
 	Clouds clouds(screenSize);
 
 	/* Minimap */
-	Minimap minimap(ceil(screenSize.x / 32.0), ceil(screenSize.y / 32.0));
+	Minimap minimap(ceil(screenSize.x / 32.0) + 20, ceil(screenSize.y / 32.0) + 20);
 	
 	/* Text */
 	BitmapFont defaultfont("assets/font/font.png", Vec2(5, 8), 1);
@@ -271,9 +271,9 @@ int main(int argc, char *argv[]) {
 				setcolor.g *= 0.7;
 				setcolor.b *= 0.7;
 			}
-			
+
 			minimap.set(x, y, setcolor);
-		});
+		}, 10, 10, 10, 10);
 		minimap.updateTexture();
 
 		/* Rendering: */

@@ -311,12 +311,12 @@ void Grid::generate() {
 	*/
 }
 
-void Grid::eachVisibleBlock(std::function<void (Block &, Block &, int, int)> blockFunc) {
+void Grid::eachVisibleBlock(std::function<void (Block &, Block &, int, int)> blockFunc, int xoff, int yoff, int xendoff, int yendoff) {
 	
-	int xs = -ceil(Grid::offset.x / 32.0);
-	int ys = -ceil(Grid::offset.y / 32.0);
-	int width = ceil(Grid::framebuffer.getSize().x / 32.0);
-	int height = ceil(Grid::framebuffer.getSize().y / 32.0);
+	int xs = -ceil(Grid::offset.x / 32.0) - xoff;
+	int ys = -ceil(Grid::offset.y / 32.0) - yoff;
+	int width = ceil(Grid::framebuffer.getSize().x / 32.0) + xendoff + xoff;
+	int height = ceil(Grid::framebuffer.getSize().y / 32.0) + yendoff + yoff;
 
 	for (int y = ys; y < ys + height; ++y) {
 		for (int x = xs; x < xs + width; ++x) {
