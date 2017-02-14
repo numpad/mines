@@ -282,7 +282,7 @@ void c2Collide( void* A, c2x* ax, C2_TYPE typeA, void* B, c2x* bx, C2_TYPE typeB
 #ifdef _WIN32
 	#define C2_INLINE __forceinline
 #else
-	#define C2_INLINE __attribute__((always_inline))
+	#define C2_INLINE __inline__ __attribute__((always_inline))
 #endif
 
 // adjust these primitives as seen fit

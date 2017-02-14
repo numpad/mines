@@ -8,6 +8,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
+#define C2_IMPL
+#include "lib/tinyc2.h"
+
 #include "rgb.hpp"
 #include "rect.hpp"
 #include "Vec2.hpp"
@@ -77,59 +80,8 @@ void updateItems(Player &player, Grid &grid, std::vector<Item> &items) {
 	}
 }
 
-int run_server(const int port) {
-	printf("[Log] Starting server on port %d...\n", port);
-
-	sf::TcpListener listener;
-	if (listener.listen(port) != sf::Socket::Done) {
-		printf("[Error] Failed listening on port :%d\n", port);
-	}
-
-	sf::TcpSocket client;
-	if (listener.accept(client) != sf::Socket::Done) {
-		printf("[Error] Failed accepting client!\n");
-	}
-
-	puts("[Log] Server stopped!");
-	return 0;
-}
-
-int run_connect(sf::IpAddress &address, int port) {
-	printf("[Log] Connecting to %s:%d\n", address.toString().c_str(), port);
-
-	sf::TcpSocket socket;
-	if (socket.connect(address, port) != sf::Socket::Done) {
-		printf("[Error] Failed connecting to server!\n");
-		return 1;
-	}
-
-	
-
-	puts("[Log] Connect stopped!");
-	return 0;
-}
-
 int main(int argc, char *argv[]) {
-	if (argc >= 2) {
-		int port = 8123;
-		if (!strcmp(argv[1], "--server")) {
-			if (argc >= 3 && argv[2][0] == ':')
-				port = atoi(argv[2] + 1);
-			
-			return run_server(port);
-		} else if (!strcmp(argv[1], "--connect")) {
-			sf::IpAddress serverAddress = sf::IpAddress::getLocalAddress();
-			if (argc >= 3)
-				serverAddress = sf::IpAddress(argv[2]);
-			
-			if (argc >= 4 && argv[3][0] == ':')
-				port = atoi(argv[3] + 1);
-
-			return run_connect(serverAddress, port);
-		}
-	}
-
-	Vec2 screenSize = Vec2(890, 780); // 800 x 740
+	Vec2 screenSize = Vec2(890, 780);
 	sf::RenderWindow window(sf::VideoMode(screenSize.x, screenSize.y), "Mines!", sf::Style::Titlebar | sf::Style::Close);
 	window.setVerticalSyncEnabled(true);
 
