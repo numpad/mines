@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
 
 	/* Items */
 	std::vector<Item> items = std::vector<Item>();
-	
+
 	/* Weather */
 	Clouds clouds(screenSize);
 

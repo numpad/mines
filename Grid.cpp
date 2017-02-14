@@ -320,8 +320,9 @@ void Grid::eachVisibleBlock(std::function<void (Block &, Block &, int, int)> blo
 
 	for (int y = ys; y < ys + height; ++y) {
 		for (int x = xs; x < xs + width; ++x) {
-			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height)
+			if (x < 0 || x >= Grid::width || y < 0 || y >= Grid::height) {
 				continue;
+			}
 			
 			blockFunc(Grid::at(x, y), Grid::at(x, y, false), x - xs, y - ys);
 		}
