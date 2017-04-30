@@ -1,0 +1,15 @@
+[result] 4x stick
+[input]
+ # = wood
+[layout]
+#..
+#..
+...
+
+[result] 4x wood
+[input]
+ # = tree
+[layout]
+#..
+...
+...
