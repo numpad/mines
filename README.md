@@ -1,6 +1,6 @@
 # Mines
 
-![Mines Preview](https://ptpb.pw/D008.png in-game preview)
+[Mines Preview](https://ptpb.pw/D008.png)
 
 NOTE
 ----
